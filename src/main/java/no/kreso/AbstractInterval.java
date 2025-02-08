@@ -3,12 +3,12 @@ package no.kreso;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-public abstract class AbstractRange<T extends Comparable<? super T>> implements Range<T>, Iterable<T> {
+public abstract class AbstractInterval<T extends Comparable<? super T>> implements Interval<T>, Iterable<T> {
 
     private final T start;
     private final T end;
 
-    AbstractRange(T start, T end) {
+    AbstractInterval(T start, T end) {
         start = start == null ? minvalue() : start;
         end = end == null ? maxValue() : end;
         if (start.compareTo(end) > 0) {
@@ -21,7 +21,7 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
     abstract T minvalue();
     abstract T maxValue();
     abstract T successor(T current);
-    abstract Range<T> create(T start, T end);
+    abstract Interval<T> create(T start, T end);
 
     public T start() {
         return start;
@@ -32,7 +32,7 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
     }
 
     @Override
-    public boolean subsetOf(Range<T> other) {
+    public boolean subsetOf(Interval<T> other) {
         // The empty set is a subset of all other sets
         if (this.isEmpty()) {
             return true;
@@ -45,7 +45,7 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
     }
 
     @Override
-    public Range<T> intersection(Range<T> other) {
+    public Interval<T> intersection(Interval<T> other) {
         return create(
                 max(this.start, other.start()),
                 min(this.end, other.end())
@@ -53,7 +53,7 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
     }
 
     @Override
-    public Range<T> union(Range<T> other) {
+    public Interval<T> union(Interval<T> other) {
         if (this.end().compareTo(other.start()) < 0 || this.start().compareTo(other.end()) > 0) {
             // Disjoint ranges, return the empty range
             return create(this.start, this.start);
