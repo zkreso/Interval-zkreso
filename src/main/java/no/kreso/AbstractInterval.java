@@ -1,5 +1,6 @@
 package no.kreso;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -16,11 +17,12 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
 
     private final T start;
     private final T end;
+    private final Comparator<T> comparator = Comparator.naturalOrder();
 
     AbstractInterval(T start, T end) {
         start = start == null ? minvalue() : start;
         end = end == null ? maxValue() : end;
-        if (start.compareTo(end) > 0) {
+        if (compareTo(start, end) > 0) {
             end = start;
         }
         this.start = start;
@@ -48,6 +50,10 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
      */
     abstract Interval<T> create(T start, T end);
 
+    int compareTo(T a, T b) {
+        return comparator.compare(a, b);
+    }
+
     public T start() {
         return start;
     }
@@ -66,7 +72,7 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
         if (other.isEmpty()) {
             return false;
         }
-        return start.compareTo(other.start()) >= 0 && end.compareTo(other.end()) <= 0;
+        return compareTo(start, other.start()) >= 0 && compareTo(end, other.end()) <= 0;
     }
 
     @Override
@@ -82,7 +88,7 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
      */
     @Override
     public Interval<T> union(Interval<T> other) {
-        if (this.end().compareTo(other.start()) < 0 || this.start().compareTo(other.end()) > 0) {
+        if (compareTo(this.end, other.start()) < 0 || compareTo(this.start, other.end()) > 0) {
             // Disjoint ranges, return the empty range
             return create(this.start, this.start);
         }
@@ -93,20 +99,20 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
     }
 
     private T max(T a, T b) {
-        return a.compareTo(b) > 0 ? a : b;
+        return compareTo(a, b) > 0 ? a : b;
     }
 
     private T min(T a, T b) {
-        return a.compareTo(b) < 0 ? a : b;
+        return compareTo(a, b) < 0 ? a : b;
     }
 
     @Override
     public boolean isEmpty() {
-        return start.compareTo(end) == 0;
+        return compareTo(start, end) == 0;
     }
 
     @Override
     public Iterator<T> iterator() {
-        return Stream.iterate(start, (next) -> end.compareTo(next) > 0, this::successor).iterator();
+        return Stream.iterate(start, (next) -> compareTo(end, next) > 0, this::successor).iterator();
     }
 }
