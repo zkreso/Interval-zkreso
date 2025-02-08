@@ -43,7 +43,7 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
     }
 
     @Override
-    public Range<T> and(Range<T> other) {
+    public Range<T> intersection(Range<T> other) {
         return create(
                 max(this.start, other.start()),
                 min(this.end, other.end())
@@ -51,9 +51,9 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
     }
 
     @Override
-    public Range<T> or(Range<T> other) {
+    public Range<T> union(Range<T> other) {
         if (this.end().compareTo(other.start()) < 0 || this.start().compareTo(other.end()) > 0) {
-            // Disjoint ranges, return a range with same start and end
+            // Disjoint ranges, return the empty range
             return create(this.start, this.start);
         }
         return create(

@@ -30,4 +30,12 @@ public class DateRange extends AbstractRange<LocalDate> {
     Range<LocalDate> create(LocalDate start, LocalDate end) {
         return of(start, end);
     }
+
+    public DateRange union(DateRange other) {
+        return (DateRange) super.union(other);
+    }
+
+    public DateRange intersection(DateRange other) {
+        return (DateRange) super.intersection(other);
+    }
 }
