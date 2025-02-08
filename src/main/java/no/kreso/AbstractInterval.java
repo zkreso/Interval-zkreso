@@ -3,6 +3,15 @@ package no.kreso;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+/**
+ * Base class that can be extended to create an implementation of Interval for types T that already implement
+ * Comparable. This implementation does not handle negative and positive infinity. It depends on the existence of a
+ * minimal and maximal representable value for the type of element the interval is for. Additionally, the implementation
+ * assumes that the lower bound is inclusive, while the upper bound is exclusive. Furthermore, the implementation
+ * assumes that the type of element consists of discrete values, and asks for a successor function to provide an
+ * implementation of the Iterable interface.
+ * @param <T> The type of element of the interval. Must implement Comparable.
+ */
 public abstract class AbstractInterval<T extends Comparable<? super T>> implements Interval<T>, Iterable<T> {
 
     private final T start;
@@ -18,9 +27,25 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
         this.end = end;
     }
 
+    /**
+     * The minimum possible value of type T.
+     */
     abstract T minvalue();
+
+    /**
+     * The maximum possible value of type T.
+     */
     abstract T maxValue();
+
+    /**
+     * Must return the element succeeding the specified element.
+     */
     abstract T successor(T current);
+
+    /**
+     * A method for creating a new instance of the interval. It is needed for the abstract class to be able to create
+     * new instances of the subclass on demand.
+     */
     abstract Interval<T> create(T start, T end);
 
     public T start() {
@@ -52,6 +77,9 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
         );
     }
 
+    /**
+     * Returns the union between to intervals. In case of disjoint intervals, returns an empty interval.
+     */
     @Override
     public Interval<T> union(Interval<T> other) {
         if (this.end().compareTo(other.start()) < 0 || this.start().compareTo(other.end()) > 0) {
