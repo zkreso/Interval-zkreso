@@ -6,12 +6,13 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 /**
- * Base class that can be extended to create an implementation of Interval for types T that already implement
- * Comparable. This implementation does not handle negative and positive infinity. It depends on the existence of a
- * minimal and maximal representable value for the type of element the interval is for. Additionally, the implementation
- * assumes that the lower bound is inclusive, while the upper bound is exclusive. Furthermore, the implementation
- * assumes that the type of element consists of discrete values, and asks for a successor function to provide an
- * implementation of the Iterable interface.
+ * Base class that can be extended to create an implementation of Interval.
+ * <ul>
+ *  <li>The type T must be discrete, not continuous.</li>
+ *  <li>Additionally, a maximum and minimum value for the type must be defined (infinity is not handled).</li>
+ *  <li>The implementation treats the lower bound as inclusive and upper bound as exclusive.</li>
+ * </ul>
+ * T must implement comparable, but a custom comparator can be used by overriding the compareTo method.
  * @param <T> The type of element of the interval. Must implement Comparable.
  */
 public abstract class AbstractInterval<T extends Comparable<? super T>> implements Interval<T>, Iterable<T> {
