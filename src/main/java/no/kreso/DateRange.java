@@ -18,7 +18,12 @@ public class DateRange extends AbstractRange<LocalDate> {
         return LocalDate.MAX;
     }
 
-    public static Range<LocalDate> of(LocalDate start, LocalDate end) {
+    @Override
+    LocalDate successor(LocalDate current) {
+        return current.plusDays(1);
+    }
+
+    public static DateRange of(LocalDate start, LocalDate end) {
         return new DateRange(start, end);
     }
 
