@@ -19,7 +19,7 @@ public class IntegerInterval extends AbstractInterval<Integer> {
 
     @Override
     Integer successor(Integer current) {
-        return current++;
+        return ++current;
     }
 
     @Override
