@@ -33,9 +33,11 @@ public abstract class AbstractRange<T extends Comparable<? super T>> implements 
 
     @Override
     public boolean subsetOf(Range<T> other) {
+        // The empty set is a subset of all other sets
         if (this.isEmpty()) {
             return true;
         }
+        // The empty set has only itself as a subset
         if (other.isEmpty()) {
             return false;
         }
