@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomComparatorTest {
 
-    static class ReverseIntegerInterval extends IntegerInterval {
+    static class ReverseIntegerInterval extends AbstractInterval<Integer> {
 
         static final Comparator<Integer> reverseOrder = Comparator.reverseOrder();
 
@@ -22,18 +22,18 @@ public class CustomComparatorTest {
             return Integer.MIN_VALUE;
         }
 
+        @Override
+        Integer successor(Integer current) {
+            return --current;
+        }
+
         public ReverseIntegerInterval(Integer high, Integer low) {
-            super(high, low);
+            super(high, low, ReverseIntegerInterval::new);
         }
 
         @Override
         int compareTo(Integer a, Integer b) {
             return reverseOrder.compare(a, b);
-        }
-
-        @Override
-        Interval<Integer> create(Integer start, Integer end) {
-            return ReverseIntegerInterval.of(start, end);
         }
 
         public static ReverseIntegerInterval of(Integer start, Integer end) {

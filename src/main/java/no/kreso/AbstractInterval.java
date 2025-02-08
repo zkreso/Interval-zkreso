@@ -2,6 +2,7 @@ package no.kreso;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 /**
@@ -18,8 +19,10 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
     private final T start;
     private final T end;
     private final Comparator<T> comparator = Comparator.naturalOrder();
+    private final BiFunction<T, T, AbstractInterval<T>> constructor;
 
-    AbstractInterval(T start, T end) {
+    AbstractInterval(T start, T end, BiFunction<T, T, AbstractInterval<T>> constructor) {
+        this.constructor = constructor;
         start = start == null ? minvalue() : start;
         end = end == null ? maxValue() : end;
         if (compareTo(start, end) > 0) {
@@ -27,6 +30,10 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
         }
         this.start = start;
         this.end = end;
+    }
+
+    protected AbstractInterval<T> newInstance(T start, T end) {
+        return constructor.apply(start, end);
     }
 
     /**
@@ -44,12 +51,6 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
      */
     abstract T successor(T current);
 
-    /**
-     * A method for creating a new instance of the interval. It is needed for the abstract class to be able to create
-     * new instances of the subclass on demand.
-     */
-    abstract Interval<T> create(T start, T end);
-
     int compareTo(T a, T b) {
         return comparator.compare(a, b);
     }
@@ -63,7 +64,7 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
     }
 
     @Override
-    public boolean subsetOf(Interval<T> other) {
+    final public boolean subsetOf(Interval<T> other) {
         // The empty set is a subset of all other sets
         if (this.isEmpty()) {
             return true;
@@ -76,8 +77,8 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
     }
 
     @Override
-    public Interval<T> intersection(Interval<T> other) {
-        return create(
+    final public Interval<T> intersection(Interval<T> other) {
+        return newInstance(
                 max(this.start, other.start()),
                 min(this.end, other.end())
         );
@@ -87,12 +88,12 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
      * Returns the union between to intervals. In case of disjoint intervals, returns an empty interval.
      */
     @Override
-    public Interval<T> union(Interval<T> other) {
+    final public Interval<T> union(Interval<T> other) {
         if (compareTo(this.end, other.start()) < 0 || compareTo(this.start, other.end()) > 0) {
             // Disjoint ranges, return the empty range
-            return create(this.start, this.start);
+            return newInstance(this.start, this.start);
         }
-        return create(
+        return newInstance(
                 min(this.start, other.start()),
                 max(this.end, other.end())
         );
@@ -107,7 +108,7 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
     }
 
     @Override
-    public boolean isEmpty() {
+    final public boolean isEmpty() {
         return compareTo(start, end) == 0;
     }
 

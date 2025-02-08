@@ -2,9 +2,8 @@ package no.kreso;
 
 public class IntegerInterval extends AbstractInterval<Integer> {
 
-    public IntegerInterval(Integer start, Integer end)
-    {
-        super(start, end);
+    public IntegerInterval(Integer start, Integer end) {
+        super(start, end, IntegerInterval::new);
     }
 
     @Override
@@ -20,11 +19,6 @@ public class IntegerInterval extends AbstractInterval<Integer> {
     @Override
     Integer successor(Integer current) {
         return ++current;
-    }
-
-    @Override
-    Interval<Integer> create(Integer start, Integer end) {
-        return IntegerInterval.of(start, end);
     }
 
     public static IntegerInterval of(Integer start, Integer end) {
