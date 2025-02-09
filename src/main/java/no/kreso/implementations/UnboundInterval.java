@@ -6,8 +6,8 @@ import java.time.LocalDate;
 
 /**
  * An implementation of Interval for LocalDate that treats null arguments for lower bound as -infinity and as +infinity
- * for upper bound. Lower bound is treated as inclusive and upper bound as exclusive. Unions between disjoint intervals
- * are not supported and return the empty interval.
+ * for upper bound. Lower bound is treated as inclusive and upper bound as exclusive (when not representing infinities).
+ * Unions between disjoint intervals are not supported and return the empty interval.
  */
 public class UnboundInterval implements Interval<LocalDate> {
 
