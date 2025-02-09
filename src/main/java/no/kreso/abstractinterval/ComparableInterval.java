@@ -2,12 +2,13 @@ package no.kreso.abstractinterval;
 
 import no.kreso.Interval;
 
-import java.util.function.BiFunction;
+import java.util.Comparator;
 
 /**
  * Base class that can be extended to create an implementation of Interval for types that are comparable.
  * We do not enforce that the type must extend Comparable, because we want to allow non-default comparators as well.
- * Instead, we ensure comparison through an abstract compareTo method. The method must work the same way as Comparable.
+ * Instead, the comparator must be supplied in the constructor. Once constructed, the of() method can be used to create
+ * new instances with a copy of the existing configuration.
  * <ul>
  *  <li>
  *      This implementation treats the lower bound as inclusive and upper bound as exclusive.
@@ -23,41 +24,34 @@ import java.util.function.BiFunction;
  * </ul>
  * @param <T> The type of element of the interval.
  */
-public abstract class ComparableInterval<T> implements Interval<T> {
+public class ComparableInterval<T> implements Interval<T> {
 
     private final T start;
     private final T end;
-    private final BiFunction<T, T, ComparableInterval<T>> constructor;
+    private final Comparator<T> comparator;
+    private final T minValue;
+    private final T maxValue;
 
-    ComparableInterval(T start, T end, BiFunction<T, T, ComparableInterval<T>> constructor) {
-        this.constructor = constructor;
-        start = start == null ? minvalue() : start;
-        end = end == null ? maxValue() : end;
-        if (compareTo(start, end) > 0) {
+    public static <T> ComparableInterval<T> forType(Comparator<T> comparator, T minValue, T maxValue) {
+        return new ComparableInterval<>(comparator, minValue, maxValue, minValue, minValue);
+    }
+
+    public Interval<T> of(T start, T end) {
+        return new ComparableInterval<>(this.comparator, this.minValue, this.maxValue, start, end);
+    }
+
+    private ComparableInterval(Comparator<T> comparator, T minValue, T maxValue, T start, T end) {
+        this.comparator = comparator;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        start = start == null ? minValue : start;
+        end = end == null ? maxValue : end;
+        if (comparator.compare(start, end) > 0) {
             end = start;
         }
         this.start = start;
         this.end = end;
     }
-
-    protected ComparableInterval<T> newInstance(T start, T end) {
-        return constructor.apply(start, end);
-    }
-
-    /**
-     * The minimum possible value of type T. Used to replace null arguments for lower bound.
-     */
-    abstract T minvalue();
-
-    /**
-     * The maximum possible value of type T. Used to replace null arguments for upper bound.
-     */
-    abstract T maxValue();
-
-    /**
-     * A comparison function. Same requirements as Comparator interface.
-     */
-    abstract int compareTo(T a, T b);
 
     public T start() {
         return start;
@@ -77,15 +71,13 @@ public abstract class ComparableInterval<T> implements Interval<T> {
         if (other.isEmpty()) {
             return false;
         }
-        return compareTo(start, other.start()) >= 0 && compareTo(end, other.end()) <= 0;
+        return comparator.compare(start, other.start()) >= 0 && comparator.compare(end, other.end()) <= 0;
     }
 
     @Override
     final public Interval<T> intersection(Interval<T> other) {
-        return newInstance(
-                max(this.start, other.start()),
-                min(this.end, other.end())
-        );
+        T start1 = max(this.start, other.start());
+        return of(start1, min(this.end, other.end()));
     }
 
     /**
@@ -93,26 +85,24 @@ public abstract class ComparableInterval<T> implements Interval<T> {
      */
     @Override
     final public Interval<T> union(Interval<T> other) {
-        if (compareTo(this.end, other.start()) < 0 || compareTo(this.start, other.end()) > 0) {
+        if (comparator.compare(this.end, other.start()) < 0 || comparator.compare(this.start, other.end()) > 0) {
             // Disjoint ranges, return the empty range
-            return newInstance(this.start, this.start);
+            return of(this.start, this.start);
         }
-        return newInstance(
-                min(this.start, other.start()),
-                max(this.end, other.end())
-        );
+        T start1 = min(this.start, other.start());
+        return of(start1, max(this.end, other.end()));
     }
 
     private T max(T a, T b) {
-        return compareTo(a, b) > 0 ? a : b;
+        return comparator.compare(a, b) > 0 ? a : b;
     }
 
     private T min(T a, T b) {
-        return compareTo(a, b) < 0 ? a : b;
+        return comparator.compare(a, b) < 0 ? a : b;
     }
 
     @Override
     final public boolean isEmpty() {
-        return compareTo(start, end) == 0;
+        return comparator.compare(start, end) == 0;
     }
 }
