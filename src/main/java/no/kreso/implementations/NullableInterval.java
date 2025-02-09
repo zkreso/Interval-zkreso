@@ -4,6 +4,10 @@ import no.kreso.Interval;
 
 import java.time.LocalDate;
 
+/**
+ * An implementation of Interval that treats null arguments for lower bound as -infinity and as +infinity for upper
+ * bound.
+ */
 public class NullableInterval implements Interval<LocalDate> {
 
     private static final NullableInterval EMPTY_INTERVAL = new NullableInterval(LocalDate.EPOCH, LocalDate.EPOCH);
