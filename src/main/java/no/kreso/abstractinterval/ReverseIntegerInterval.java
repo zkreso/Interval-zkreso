@@ -1,10 +1,10 @@
-package no.kreso;
+package no.kreso.abstractinterval;
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-class ReverseIntegerInterval extends AbstractInterval<Integer> implements Iterable<Integer> {
+public class ReverseIntegerInterval extends ComparableInterval<Integer> implements Iterable<Integer> {
 
     private static final Comparator<Integer> reverseOrder = Comparator.reverseOrder();
 

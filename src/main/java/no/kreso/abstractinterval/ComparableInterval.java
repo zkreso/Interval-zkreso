@@ -1,17 +1,21 @@
-package no.kreso;
+package no.kreso.abstractinterval;
+
+import no.kreso.Interval;
 
 import java.util.function.BiFunction;
 
 /**
- * Base class that can be extended to create an implementation of Interval.
+ * Base class that can be extended to create an implementation of Interval for types that are comparable.
+ * We do not enforce that the type must extend Comparable, because we want to allow non-default comparators as well.
+ * Instead, we ensure comparison through an abstract compareTo method. The method must work the same way as Comparable.
  * <ul>
  *  <li>
  *      This implementation treats the lower bound as inclusive and upper bound as exclusive.
  *  </li>
  *  <li>
  *      Null arguments for lower bound will be replaced by a minimum value. Likewise for upper
- *      bound and a maximum value. This is necessary because the comparison function does not
- *      have context of whether we are comparing an upper or lower bound.
+ *      bound and a maximum value. This is necessary because the Comparator interface does not
+ *      handle null values.
  *  </li>
  *  <li>
  *      This implementation always returns the empty range when union is applied to disjoint ranges.
@@ -19,13 +23,13 @@ import java.util.function.BiFunction;
  * </ul>
  * @param <T> The type of element of the interval.
  */
-public abstract class AbstractInterval<T> implements Interval<T> {
+public abstract class ComparableInterval<T> implements Interval<T> {
 
     private final T start;
     private final T end;
-    private final BiFunction<T, T, AbstractInterval<T>> constructor;
+    private final BiFunction<T, T, ComparableInterval<T>> constructor;
 
-    AbstractInterval(T start, T end, BiFunction<T, T, AbstractInterval<T>> constructor) {
+    ComparableInterval(T start, T end, BiFunction<T, T, ComparableInterval<T>> constructor) {
         this.constructor = constructor;
         start = start == null ? minvalue() : start;
         end = end == null ? maxValue() : end;
@@ -36,7 +40,7 @@ public abstract class AbstractInterval<T> implements Interval<T> {
         this.end = end;
     }
 
-    protected AbstractInterval<T> newInstance(T start, T end) {
+    protected ComparableInterval<T> newInstance(T start, T end) {
         return constructor.apply(start, end);
     }
 

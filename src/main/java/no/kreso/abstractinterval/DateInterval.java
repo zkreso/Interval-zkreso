@@ -1,11 +1,11 @@
-package no.kreso;
+package no.kreso.abstractinterval;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-public class DateInterval extends AbstractInterval<LocalDate> implements Iterable<LocalDate> {
+public class DateInterval extends ComparableInterval<LocalDate> implements Iterable<LocalDate> {
 
     private static final Comparator<LocalDate> comparator = Comparator.naturalOrder();
 

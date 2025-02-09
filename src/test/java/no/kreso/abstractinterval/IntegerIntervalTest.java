@@ -1,5 +1,6 @@
-package no.kreso;
+package no.kreso.abstractinterval;
 
+import no.kreso.abstractinterval.IntegerInterval;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,4 +1,4 @@
-package no.kreso;
+package no.kreso.abstractinterval;
 
 import org.junit.jupiter.api.Test;
 
