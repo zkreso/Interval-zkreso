@@ -19,7 +19,7 @@ import java.util.Comparator;
  *      handle null values.
  *  </li>
  *  <li>
- *      This implementation always returns the empty range when union is applied to disjoint ranges.
+ *      This implementation always returns the empty interval when union is applied to disjoint intervals.
  *  </li>
  * </ul>
  * @param <T> The type of element of the interval.
@@ -86,7 +86,7 @@ public class ComparableInterval<T> implements Interval<T> {
     @Override
     final public Interval<T> union(Interval<T> other) {
         if (comparator.compare(this.end, other.start()) < 0 || comparator.compare(this.start, other.end()) > 0) {
-            // Disjoint ranges, return the empty range
+            // Disjoint intervals, return the empty interval
             return of(this.start, this.start);
         }
         T start1 = min(this.start, other.start());

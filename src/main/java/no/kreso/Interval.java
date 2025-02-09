@@ -2,7 +2,7 @@ package no.kreso;
 
 /**
  * Interface representing basic operations on intervals.
- * @param <T> The type of element included in the range. The elements should be comparable, but since there could be
+ * @param <T> The type of element included in the interval. The elements should be comparable, but since there could be
  *           multiple ways to compare the type of element, we do not enforce that the type should implement Comparable,
  *           and leave it up to the implementation.
  */
