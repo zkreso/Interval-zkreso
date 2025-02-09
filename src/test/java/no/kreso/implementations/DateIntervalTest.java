@@ -10,10 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DateIntervalTest {
 
+    private final LocalDate feb5th = LocalDate.of(2025, 2, 5);
+    private final LocalDate feb10th = LocalDate.of(2025, 2, 10);
+    private final LocalDate feb11th = LocalDate.of(2025, 2, 11);
+    private final LocalDate feb20th = LocalDate.of(2025, 2, 20);
+
     @Test
     void creation() {
-        LocalDate feb5th = LocalDate.of(2025, 2, 5);
-        LocalDate feb10th = LocalDate.of(2025, 2, 10);
         Interval<LocalDate> interval = DATE_INTERVAL.of(feb5th, feb10th);
         assertTrue(interval.start().isEqual(feb5th));
         assertTrue(interval.end().isEqual(feb10th));
@@ -22,9 +25,6 @@ class DateIntervalTest {
     @Test
     void creationWithNull() {
         Interval<LocalDate> interval;
-
-        LocalDate feb5th = LocalDate.of(2025, 2, 5);
-        LocalDate feb10th = LocalDate.of(2025, 2, 10);
 
         interval = DATE_INTERVAL.of(null, feb10th);
         assertTrue(interval.start().isEqual(LocalDate.MIN));
@@ -41,8 +41,6 @@ class DateIntervalTest {
 
     @Test
     void creationWithReversedParameters() {
-        LocalDate feb5th = LocalDate.of(2025, 2, 5);
-        LocalDate feb10th = LocalDate.of(2025, 2, 10);
         Interval<LocalDate> interval = DATE_INTERVAL.of(feb10th, feb5th);
         assertTrue(interval.isEmpty());
     }
@@ -50,10 +48,6 @@ class DateIntervalTest {
     @Test
     void subsetOf() {
         Interval<LocalDate> emptySet;
-
-        LocalDate feb5th = LocalDate.of(2025, 2, 5);
-        LocalDate feb10th = LocalDate.of(2025, 2, 10);
-        LocalDate feb20th = LocalDate.of(2025, 2, 20);
 
         Interval<LocalDate> interval = DATE_INTERVAL.of(feb5th, feb10th);
         emptySet = DATE_INTERVAL.of(feb20th, feb20th);
@@ -77,11 +71,6 @@ class DateIntervalTest {
         Interval<LocalDate> other;
         Interval<LocalDate> union;
 
-        LocalDate feb5th = LocalDate.of(2025, 2, 5);
-        LocalDate feb10th = LocalDate.of(2025, 2, 10);
-        LocalDate feb11th = LocalDate.of(2025, 2, 11);
-        LocalDate feb20th = LocalDate.of(2025, 2, 20);
-
         interval = DATE_INTERVAL.of(feb5th, feb10th);
         other = DATE_INTERVAL.of(feb5th, feb20th);
         union = interval.union(other);
@@ -101,11 +90,6 @@ class DateIntervalTest {
         Interval<LocalDate> interval;
         Interval<LocalDate> other;
         Interval<LocalDate> intersection;
-
-        LocalDate feb5th = LocalDate.of(2025, 2, 5);
-        LocalDate feb10th = LocalDate.of(2025, 2, 10);
-        LocalDate feb11th = LocalDate.of(2025, 2, 11);
-        LocalDate feb20th = LocalDate.of(2025, 2, 20);
 
         interval = DATE_INTERVAL.of(feb5th, feb11th);
         other = DATE_INTERVAL.of(feb10th, feb20th);

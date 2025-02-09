@@ -172,4 +172,71 @@ class NullableIntervalTest {
         union = interval.union(other);
         assertTrue(union.isEmpty());
     }
+
+    @Test
+    public void intersection() {
+        Interval<LocalDate> interval;
+        Interval<LocalDate> other;
+        Interval<LocalDate> intersection;
+
+        interval = NullableInterval.of(feb5th, feb11th);
+        other = NullableInterval.of(feb10th, feb20th);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb10th));
+        assertTrue(intersection.end().isEqual(feb11th));
+
+        interval = NullableInterval.of(null, feb11th);
+        other = NullableInterval.of(feb10th, feb20th);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb10th));
+        assertTrue(intersection.end().isEqual(feb11th));
+
+        interval = NullableInterval.of(feb5th, feb11th);
+        other = NullableInterval.of(feb10th, null);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb10th));
+        assertTrue(intersection.end().isEqual(feb11th));
+
+        interval = NullableInterval.of(null, feb11th);
+        other = NullableInterval.of(feb10th, null);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb10th));
+        assertTrue(intersection.end().isEqual(feb11th));
+
+        interval = NullableInterval.of(feb5th, null);
+        other = NullableInterval.of(feb10th, feb20th);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb10th));
+        assertTrue(intersection.end().isEqual(feb20th));
+
+        interval = NullableInterval.of(feb5th, feb11th);
+        other = NullableInterval.of(null, feb20th);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb5th));
+        assertTrue(intersection.end().isEqual(feb11th));
+
+        interval = NullableInterval.of(feb5th, null);
+        other = NullableInterval.of(null, feb20th);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb5th));
+        assertTrue(intersection.end().isEqual(feb20th));
+
+        interval = NullableInterval.of(null, null);
+        other = NullableInterval.of(null, feb20th);
+        intersection = interval.intersection(other);
+        assertNull(intersection.start());
+        assertTrue(intersection.end().isEqual(feb20th));
+
+        interval = NullableInterval.of(feb5th, null);
+        other = NullableInterval.of(null, null);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.start().isEqual(feb5th));
+        assertNull(intersection.end());
+
+        interval = NullableInterval.of(null, null);
+        other = NullableInterval.of(null, null);
+        intersection = interval.intersection(other);
+        assertNull(intersection.start());
+        assertNull(intersection.end());
+    }
 }
