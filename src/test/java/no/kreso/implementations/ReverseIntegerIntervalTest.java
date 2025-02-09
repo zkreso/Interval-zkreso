@@ -3,7 +3,7 @@ package no.kreso.implementations;
 import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
 
-import static no.kreso.implementations.Intervals.*;
+import static no.kreso.implementations.IntervalFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 

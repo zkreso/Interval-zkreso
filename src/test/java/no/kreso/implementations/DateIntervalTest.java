@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static no.kreso.implementations.Intervals.*;
+import static no.kreso.implementations.IntervalFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DateIntervalTest {
