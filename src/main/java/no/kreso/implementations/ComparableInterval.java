@@ -76,8 +76,10 @@ public class ComparableInterval<T> implements Interval<T> {
 
     @Override
     final public Interval<T> intersection(Interval<T> other) {
-        T start1 = max(this.start, other.start());
-        return of(start1, min(this.end, other.end()));
+        return of(
+                max(this.start, other.start()),
+                min(this.end, other.end())
+        );
     }
 
     /**
@@ -89,8 +91,10 @@ public class ComparableInterval<T> implements Interval<T> {
             // Disjoint intervals, return the empty interval
             return of(this.start, this.start);
         }
-        T start1 = min(this.start, other.start());
-        return of(start1, max(this.end, other.end()));
+        return of(
+                min(this.start, other.start()),
+                max(this.end, other.end())
+        );
     }
 
     private T max(T a, T b) {
