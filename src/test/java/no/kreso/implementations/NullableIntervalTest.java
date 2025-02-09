@@ -48,6 +48,9 @@ class NullableIntervalTest {
         interval = NullableInterval.of(feb10th, feb5th);
         assertTrue(interval.isEmpty());
 
+        interval = NullableInterval.of(feb5th, feb5th);
+        assertTrue(interval.isEmpty());
+
         interval = NullableInterval.of(feb10th, null);
         assertFalse(interval.isEmpty());
 
