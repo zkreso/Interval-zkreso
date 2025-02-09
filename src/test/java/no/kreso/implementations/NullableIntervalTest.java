@@ -20,4 +20,156 @@ class NullableIntervalTest {
         assertTrue(interval.start().isEqual(feb5th));
         assertTrue(interval.end().isEqual(feb10th));
     }
+
+    @Test
+    public void creationWithNull() {
+        Interval<LocalDate> interval;
+
+        interval = NullableInterval.of(null, feb10th);
+        assertNull(interval.start());
+        assertTrue(interval.end().isEqual(feb10th));
+        assertFalse(interval.isEmpty());
+
+        interval = NullableInterval.of(feb10th, null);
+        assertTrue(interval.start().isEqual(feb10th));
+        assertNull(interval.end());
+        assertFalse(interval.isEmpty());
+
+        interval = NullableInterval.of(null, null);
+        assertNull(interval.start());
+        assertNull(interval.end());
+        assertFalse(interval.isEmpty());
+    }
+
+    @Test
+    public void creationWithReversedParameters() {
+        Interval<LocalDate> interval;
+
+        interval = NullableInterval.of(feb10th, feb5th);
+        assertTrue(interval.isEmpty());
+
+        interval = NullableInterval.of(feb10th, null);
+        assertFalse(interval.isEmpty());
+
+        interval = NullableInterval.of(null, feb10th);
+        assertFalse(interval.isEmpty());
+    }
+
+    @Test
+    public void subsetOf() {
+        Interval<LocalDate> emptySet = NullableInterval.of(feb5th, feb5th);
+        Interval<LocalDate> interval;
+
+        // 1. A set is always a subset of itself
+        // 2. The empty set is a subset of all other sets
+        // 3. The empty set has only the empty set as a subset
+        interval = NullableInterval.of(feb5th, feb10th);
+        assertTrue(interval.subsetOf(interval));
+        assertTrue(emptySet.subsetOf(interval));
+        assertFalse(interval.subsetOf(emptySet));
+
+        interval = NullableInterval.of(feb5th, null);
+        assertTrue(interval.subsetOf(interval));
+        assertTrue(emptySet.subsetOf(interval));
+        assertFalse(interval.subsetOf(emptySet));
+
+        interval = NullableInterval.of(null, feb5th);
+        assertTrue(interval.subsetOf(interval));
+        assertTrue(emptySet.subsetOf(interval));
+        assertFalse(interval.subsetOf(emptySet));
+
+        interval = NullableInterval.of(null, null);
+        assertTrue(interval.subsetOf(interval));
+        assertTrue(emptySet.subsetOf(interval));
+        assertFalse(interval.subsetOf(emptySet));
+
+        interval = NullableInterval.of(feb20th, feb20th);
+        assertTrue(interval.subsetOf(interval));
+        assertTrue(emptySet.subsetOf(interval));
+        assertTrue(interval.subsetOf(emptySet));
+    }
+
+    @Test
+    public void union() {
+        Interval<LocalDate> interval;
+        Interval<LocalDate> other;
+        Interval<LocalDate> union;
+
+        interval = NullableInterval.of(feb5th, feb10th);
+        other = NullableInterval.of(feb10th, feb20th);
+        union = interval.union(other);
+        assertTrue(union.start().isEqual(feb5th));
+        assertTrue(union.end().isEqual(feb20th));
+
+        interval = NullableInterval.of(null, feb10th);
+        other = NullableInterval.of(feb10th, feb20th);
+        union = interval.union(other);
+        assertNull(union.start());
+        assertTrue(union.end().isEqual(feb20th));
+
+        interval = NullableInterval.of(feb5th, feb10th);
+        other = NullableInterval.of(null, feb20th);
+        union = interval.union(other);
+        assertNull(union.start());
+        assertTrue(union.end().isEqual(feb20th));
+
+        interval = NullableInterval.of(feb5th, null);
+        other = NullableInterval.of(feb10th, feb20th);
+        union = interval.union(other);
+        assertTrue(union.start().isEqual(feb5th));
+        assertNull(union.end());
+
+        interval = NullableInterval.of(feb5th, feb10th);
+        other = NullableInterval.of(feb10th, null);
+        union = interval.union(other);
+        assertTrue(union.start().isEqual(feb5th));
+        assertNull(union.end());
+
+        interval = NullableInterval.of(null, feb10th);
+        other = NullableInterval.of(feb10th, null);
+        union = interval.union(other);
+        assertNull(union.end());
+        assertNull(union.start());
+
+        interval = NullableInterval.of(null, feb10th);
+        other = NullableInterval.of(null, null);
+        union = interval.union(other);
+        assertNull(union.end());
+        assertNull(union.start());
+
+        interval = NullableInterval.of(null, null);
+        other = NullableInterval.of(null, null);
+        union = interval.union(other);
+        assertNull(union.end());
+        assertNull(union.start());
+    }
+
+    @Test
+    public void unionDisjoint() {
+        Interval<LocalDate> interval;
+        Interval<LocalDate> other;
+        Interval<LocalDate> union;
+
+        // Unions of disjoint intervals should return the empty interval
+        // Also make sure that it is exclusive
+        interval = NullableInterval.of(feb5th, feb10th);
+        other = NullableInterval.of(feb11th, feb20th);
+        union = interval.union(other);
+        assertTrue(union.isEmpty());
+
+        interval = NullableInterval.of(null, feb10th);
+        other = NullableInterval.of(feb11th, feb20th);
+        union = interval.union(other);
+        assertTrue(union.isEmpty());
+
+        interval = NullableInterval.of(feb5th, feb10th);
+        other = NullableInterval.of(feb11th, null);
+        union = interval.union(other);
+        assertTrue(union.isEmpty());
+
+        interval = NullableInterval.of(null, feb10th);
+        other = NullableInterval.of(feb11th, null);
+        union = interval.union(other);
+        assertTrue(union.isEmpty());
+    }
 }

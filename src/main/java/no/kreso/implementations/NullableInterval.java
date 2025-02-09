@@ -6,18 +6,20 @@ import java.time.LocalDate;
 
 public class NullableInterval implements Interval<LocalDate> {
 
+    private static final NullableInterval EMPTY_INTERVAL = new NullableInterval(LocalDate.EPOCH, LocalDate.EPOCH);
+
     private final LocalDate start;
     private final LocalDate end;
 
-    public NullableInterval(LocalDate start, LocalDate end) {
-        if (start != null && end != null && start.isAfter(end)) {
-            end = start;
-        }
+    private NullableInterval(LocalDate start, LocalDate end) {
         this.start = start;
         this.end = end;
     }
 
     public static Interval<LocalDate> of(LocalDate start, LocalDate end) {
+        if (start != null && end != null && start.isAfter(end)) {
+            return EMPTY_INTERVAL;
+        }
         return new NullableInterval(start, end);
     }
 
@@ -33,7 +35,15 @@ public class NullableInterval implements Interval<LocalDate> {
 
     @Override
     public boolean subsetOf(Interval<LocalDate> other) {
-        return false;
+        // The empty set is a subset of all other sets
+        if (this.isEmpty()) {
+            return true;
+        }
+        // The empty set has only itself as a subset
+        if (other.isEmpty()) {
+            return this.isEmpty();
+        }
+        return compareStart(this.start, other.start()) >= 0 && compareEnd(this.end, other.end()) <= 0;
     }
 
     @Override
@@ -52,7 +62,7 @@ public class NullableInterval implements Interval<LocalDate> {
         if (other.isEmpty()) {
             return other;
         }
-        return new NullableInterval(
+        return of(
                 maxStart(other.start()),
                 minEnd(other.end())
         );
@@ -102,15 +112,15 @@ public class NullableInterval implements Interval<LocalDate> {
         if (other.isEmpty()) {
             return this;
         }
-        // If this ends before other begins, then they are disjoint.
-        if (this.end != null && compareStart(this.end, other.start()) < 0) {
-            return new NullableInterval(this.end, this.end);
+        // If this ends before other begins,
+        boolean endsBeforeOtherStarts = this.end != null && compareStart(this.end, other.start()) < 0;
+        // or if this starts after other ends,
+        boolean startsAfterOtherEnds = this.start != null && compareEnd(this.start, other.end()) > 0;
+        // then they are disjoint.
+        if (endsBeforeOtherStarts || startsAfterOtherEnds) {
+            return EMPTY_INTERVAL;
         }
-        // If this starts after the other ends, then they are disjoint.
-        if (this.start != null && compareEnd(this.start, other.end()) > 0) {
-            return new NullableInterval(this.start, this.start);
-        }
-        return new NullableInterval(
+        return of(
                 minStart(other.start()),
                 maxEnd(other.end())
         );
