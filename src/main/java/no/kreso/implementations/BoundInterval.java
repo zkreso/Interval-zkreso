@@ -79,6 +79,12 @@ public class BoundInterval<T> implements Interval<T> {
      */
     @Override
     final public Interval<T> union(Interval<T> other) {
+        if (this.isEmpty()) {
+            return other;
+        }
+        if (other.isEmpty()) {
+            return this;
+        }
         if (comparator.compare(this.end, other.start()) < 0 || comparator.compare(this.start, other.end()) > 0) {
             // Disjoint intervals, return the empty interval
             return of(this.start, this.start);
