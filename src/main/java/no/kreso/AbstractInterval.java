@@ -1,6 +1,5 @@
 package no.kreso;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
@@ -8,18 +7,24 @@ import java.util.stream.Stream;
 /**
  * Base class that can be extended to create an implementation of Interval.
  * <ul>
- *  <li>The type T must be discrete, not continuous.</li>
- *  <li>Additionally, a maximum and minimum value for the type must be defined (infinity is not handled).</li>
- *  <li>The implementation treats the lower bound as inclusive and upper bound as exclusive.</li>
+ *  <li>
+ *      This implementation treats the lower bound as inclusive and upper bound as exclusive.
+ *  </li>
+ *  <li>
+ *      Null arguments for lower bound will be replaced by a minimum value. Likewise for upper
+ *      bound and a maximum value. This is necessary because the comparison function does not
+ *      have context of whether we are comparing an upper or lower bound.
+ *  </li>
+ *  <li>
+ *      This implementation always returns the empty range when union is applied to disjoint ranges.
+ *  </li>
  * </ul>
- * T must implement comparable, but a custom comparator can be used by overriding the compareTo method.
- * @param <T> The type of element of the interval. Must implement Comparable.
+ * @param <T> The type of element of the interval.
  */
-public abstract class AbstractInterval<T extends Comparable<? super T>> implements Interval<T>, Iterable<T> {
+public abstract class AbstractInterval<T> implements Interval<T>, Iterable<T> {
 
     private final T start;
     private final T end;
-    private final Comparator<T> comparator = Comparator.naturalOrder();
     private final BiFunction<T, T, AbstractInterval<T>> constructor;
 
     AbstractInterval(T start, T end, BiFunction<T, T, AbstractInterval<T>> constructor) {
@@ -38,12 +43,12 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
     }
 
     /**
-     * The minimum possible value of type T.
+     * The minimum possible value of type T. Used to replace null arguments for lower bound.
      */
     abstract T minvalue();
 
     /**
-     * The maximum possible value of type T.
+     * The maximum possible value of type T. Used to replace null arguments for upper bound.
      */
     abstract T maxValue();
 
@@ -52,9 +57,10 @@ public abstract class AbstractInterval<T extends Comparable<? super T>> implemen
      */
     abstract T successor(T current);
 
-    int compareTo(T a, T b) {
-        return comparator.compare(a, b);
-    }
+    /**
+     * A comparison function. Same requirements as Comparator interface.
+     */
+    abstract int compareTo(T a, T b);
 
     public T start() {
         return start;

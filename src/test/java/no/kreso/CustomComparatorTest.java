@@ -10,7 +10,7 @@ public class CustomComparatorTest {
 
     static class ReverseIntegerInterval extends AbstractInterval<Integer> {
 
-        static final Comparator<Integer> reverseOrder = Comparator.reverseOrder();
+        private static final Comparator<Integer> reverseOrder = Comparator.reverseOrder();
 
         @Override
         Integer minvalue() {

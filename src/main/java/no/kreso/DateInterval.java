@@ -1,8 +1,11 @@
 package no.kreso;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 public class DateInterval extends AbstractInterval<LocalDate> {
+
+    private static final Comparator<LocalDate> comparator = Comparator.naturalOrder();
 
     private DateInterval(LocalDate start, LocalDate end) {
         super(start, end, DateInterval::new);
@@ -21,6 +24,11 @@ public class DateInterval extends AbstractInterval<LocalDate> {
     @Override
     LocalDate successor(LocalDate current) {
         return current.plusDays(1);
+    }
+
+    @Override
+    int compareTo(LocalDate a, LocalDate b) {
+        return comparator.compare(a, b);
     }
 
     public static DateInterval of(LocalDate start, LocalDate end) {
