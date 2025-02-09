@@ -2,8 +2,10 @@ package no.kreso;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
-public class DateInterval extends AbstractInterval<LocalDate> {
+public class DateInterval extends AbstractInterval<LocalDate> implements Iterable<LocalDate> {
 
     private static final Comparator<LocalDate> comparator = Comparator.naturalOrder();
 
@@ -22,11 +24,6 @@ public class DateInterval extends AbstractInterval<LocalDate> {
     }
 
     @Override
-    LocalDate successor(LocalDate current) {
-        return current.plusDays(1);
-    }
-
-    @Override
     int compareTo(LocalDate a, LocalDate b) {
         return comparator.compare(a, b);
     }
@@ -41,5 +38,10 @@ public class DateInterval extends AbstractInterval<LocalDate> {
 
     public DateInterval intersection(DateInterval other) {
         return (DateInterval) super.intersection(other);
+    }
+
+    @Override
+    public Iterator<LocalDate> iterator() {
+        return Stream.iterate(start(), (next) -> compareTo(end(), next) > 0, date -> date.plusDays(1)).iterator();
     }
 }

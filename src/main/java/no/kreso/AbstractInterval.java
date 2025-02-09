@@ -1,8 +1,6 @@
 package no.kreso;
 
-import java.util.Iterator;
 import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 /**
  * Base class that can be extended to create an implementation of Interval.
@@ -21,7 +19,7 @@ import java.util.stream.Stream;
  * </ul>
  * @param <T> The type of element of the interval.
  */
-public abstract class AbstractInterval<T> implements Interval<T>, Iterable<T> {
+public abstract class AbstractInterval<T> implements Interval<T> {
 
     private final T start;
     private final T end;
@@ -51,11 +49,6 @@ public abstract class AbstractInterval<T> implements Interval<T>, Iterable<T> {
      * The maximum possible value of type T. Used to replace null arguments for upper bound.
      */
     abstract T maxValue();
-
-    /**
-     * Must return the element succeeding the specified element.
-     */
-    abstract T successor(T current);
 
     /**
      * A comparison function. Same requirements as Comparator interface.
@@ -117,10 +110,5 @@ public abstract class AbstractInterval<T> implements Interval<T>, Iterable<T> {
     @Override
     final public boolean isEmpty() {
         return compareTo(start, end) == 0;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return Stream.iterate(start, (next) -> compareTo(end, next) > 0, this::successor).iterator();
     }
 }

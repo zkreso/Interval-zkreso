@@ -41,7 +41,7 @@ public class IterationTest {
         doTest(reversed, 3, 2, 2);
     }
 
-    <T extends Comparable<? super T>> void doTest(AbstractInterval<T> interval, T expectedFirst, T expectedLast, int expectedCount) {
+    <U extends AbstractInterval<T> & Iterable<T>, T> void doTest(U interval, T expectedFirst, T expectedLast, int expectedCount) {
         int count = 0;
         T last = null;
         T first = null;

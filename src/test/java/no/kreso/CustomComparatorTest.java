@@ -1,6 +1,9 @@
 package no.kreso;
 
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomComparatorTest {
 
-    static class ReverseIntegerInterval extends AbstractInterval<Integer> {
+    static class ReverseIntegerInterval extends AbstractInterval<Integer> implements Iterable<Integer> {
 
         private static final Comparator<Integer> reverseOrder = Comparator.reverseOrder();
 
@@ -22,11 +25,6 @@ public class CustomComparatorTest {
             return Integer.MIN_VALUE;
         }
 
-        @Override
-        Integer successor(Integer current) {
-            return --current;
-        }
-
         public ReverseIntegerInterval(Integer high, Integer low) {
             super(high, low, ReverseIntegerInterval::new);
         }
@@ -38,6 +36,11 @@ public class CustomComparatorTest {
 
         public static ReverseIntegerInterval of(Integer start, Integer end) {
             return new ReverseIntegerInterval(start, end);
+        }
+
+        @Override
+        public Iterator<Integer> iterator() {
+            return Stream.iterate(start(), (next) -> compareTo(end(), next) > 0, i -> --i).iterator();
         }
     }
 

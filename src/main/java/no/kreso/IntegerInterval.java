@@ -1,8 +1,10 @@
 package no.kreso;
 
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
-public class IntegerInterval extends AbstractInterval<Integer> {
+public class IntegerInterval extends AbstractInterval<Integer> implements Iterable<Integer> {
 
     private static final Comparator<Integer> comparator = Comparator.naturalOrder();
 
@@ -21,16 +23,16 @@ public class IntegerInterval extends AbstractInterval<Integer> {
     }
 
     @Override
-    Integer successor(Integer current) {
-        return ++current;
-    }
-
-    @Override
     int compareTo(Integer a, Integer b) {
         return comparator.compare(a, b);
     }
 
     public static IntegerInterval of(Integer start, Integer end) {
         return new IntegerInterval(start, end);
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return Stream.iterate(start(), (next) -> compareTo(end(), next) > 0, i -> ++i).iterator();
     }
 }
