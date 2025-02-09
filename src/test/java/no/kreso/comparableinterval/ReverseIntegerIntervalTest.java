@@ -1,4 +1,4 @@
-package no.kreso.abstractinterval;
+package no.kreso.comparableinterval;
 
 import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
@@ -7,17 +7,18 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IntegerIntervalTest {
+
+public class ReverseIntegerIntervalTest {
 
     public static final ComparableInterval<Integer> intervalFactory = ComparableInterval.forType(
-            Comparator.naturalOrder(), Integer.MIN_VALUE, Integer.MAX_VALUE
+            Comparator.reverseOrder(), Integer.MAX_VALUE, Integer.MIN_VALUE
     );
 
     @Test
     void creation() {
-        Interval<Integer> range = intervalFactory.of(5, 10);
-        assertEquals(5, range.start());
-        assertEquals(10, range.end());
+        Interval<Integer> range = intervalFactory.of(10, 5);
+        assertEquals(10, range.start());
+        assertEquals(5, range.end());
     }
 
     @Test
@@ -25,21 +26,21 @@ class IntegerIntervalTest {
         Interval<Integer> range;
 
         range = intervalFactory.of(null, 10);
-        assertEquals(Integer.MIN_VALUE, range.start());
+        assertEquals(Integer.MAX_VALUE, range.start());
         assertEquals(10, range.end());
 
         range = intervalFactory.of(5, null);
         assertEquals(5, range.start());
-        assertEquals(Integer.MAX_VALUE, range.end());
+        assertEquals(Integer.MIN_VALUE, range.end());
 
         range = intervalFactory.of(null, null);
-        assertEquals(Integer.MIN_VALUE, range.start());
-        assertEquals(Integer.MAX_VALUE, range.end());
+        assertEquals(Integer.MAX_VALUE, range.start());
+        assertEquals(Integer.MIN_VALUE, range.end());
     }
 
     @Test
     void creationWithReversedParameters() {
-        Interval<Integer> range = intervalFactory.of(10, 5);
+        Interval<Integer> range = intervalFactory.of(5, 10);
         assertTrue(range.isEmpty());
     }
 
@@ -47,7 +48,7 @@ class IntegerIntervalTest {
     void subsetOf() {
         Interval<Integer> emptySet;
 
-        Interval<Integer> range = intervalFactory.of(5, 10);
+        Interval<Integer> range = intervalFactory.of(10, 5);
         emptySet = intervalFactory.of(20, 20);
 
         // A set is always its own subset
@@ -69,16 +70,16 @@ class IntegerIntervalTest {
         Interval<Integer> other;
         Interval<Integer> union;
 
-        range = intervalFactory.of(5, 10);
-        other = intervalFactory.of(5, 20);
+        range = intervalFactory.of(10, 5);
+        other = intervalFactory.of(20, 5);
         union = range.union(other);
-        assertEquals(5, union.start());
-        assertEquals(20, union.end());
+        assertEquals(20, union.start());
+        assertEquals(5, union.end());
 
         // Unions of disjoint ranges should return the empty range
         // Also make sure that end is exclusive.
-        range = intervalFactory.of(5, 10);
-        other = intervalFactory.of(11, 20);
+        range = intervalFactory.of(10, 5);
+        other = intervalFactory.of(20, 11);
         union = range.union(other);
         assertTrue(union.isEmpty());
     }
@@ -89,11 +90,11 @@ class IntegerIntervalTest {
         Interval<Integer> other;
         Interval<Integer> intersection;
 
-        range = intervalFactory.of(5, 11);
-        other = intervalFactory.of(10, 20);
+        range = intervalFactory.of(11, 5);
+        other = intervalFactory.of(20, 10);
         intersection = range.intersection(other);
-        assertEquals(10, intersection.start());
-        assertEquals(11, intersection.end());
+        assertEquals(11, intersection.start());
+        assertEquals(10, intersection.end());
 
         // Intersections with the empty set should return the empty set
         range = intervalFactory.of(5, 10);
