@@ -13,9 +13,9 @@ public interface IntervalFactory<T> {
     IntervalFactory<Integer> REVERSE_INTEGER_INTERVAL = new IntervalFactoryImpl<>(Comparator.reverseOrder(), Integer.MAX_VALUE, Integer.MIN_VALUE);
 
     class IntervalFactoryImpl<T> implements IntervalFactory<T> {
-        private final ComparableInterval<T> intervalFactory;
+        private final BoundInterval<T> intervalFactory;
         private IntervalFactoryImpl(Comparator<T> comparator, T minValue, T maxValue) {
-            this.intervalFactory = ComparableInterval.forType(comparator, minValue, maxValue);
+            this.intervalFactory = BoundInterval.forType(comparator, minValue, maxValue);
         }
         public Interval<T> of(T start, T end) {
             return intervalFactory.of(start, end);

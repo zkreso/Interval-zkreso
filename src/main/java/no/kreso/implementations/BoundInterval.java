@@ -5,26 +5,18 @@ import no.kreso.Interval;
 import java.util.Comparator;
 
 /**
- * Base class that can be extended to create an implementation of Interval for types that are comparable.
- * We do not enforce that the type must extend Comparable, because we want to allow non-default comparators as well.
- * Instead, the comparator must be supplied in the constructor. Once constructed, the of() method can be used to create
- * new instances with a copy of the existing configuration.
- * <ul>
- *  <li>
- *      This implementation treats the lower bound as inclusive and upper bound as exclusive.
- *  </li>
- *  <li>
- *      Null arguments for lower bound will be replaced by a minimum value. Likewise for upper
- *      bound and a maximum value. This is necessary because the Comparator interface does not
- *      handle null values.
- *  </li>
- *  <li>
- *      This implementation always returns the empty interval when union is applied to disjoint intervals.
- *  </li>
- * </ul>
- * @param <T> The type of element of the interval.
+ *  Implementation of a bound interval for any type T. With bound, we mean that it does not handle intervals with
+ *  positive or negative infinity as bounds.
+ *  <ul>
+ *  <li>Because the interval is bound, a min and a max value must be provided.</li>
+ *  <li>Because the implementation is generic, a comparator must also be provided.</li>
+ *  <li>The interval is initially configured and constructed using the forType() method. Once configured, the actual
+ *    intervals can be created using of() with only the lower and upper bound as necessary parameters.</li>
+ *  </ul>
+ *  Upper bound is treated as exclusive and lower bound as inclusive. Unions between disjoint intervals are not
+ *  supported and will return the empty interval.
  */
-public class ComparableInterval<T> implements Interval<T> {
+public class BoundInterval<T> implements Interval<T> {
 
     private final T start;
     private final T end;
@@ -32,20 +24,20 @@ public class ComparableInterval<T> implements Interval<T> {
     private final T minValue;
     private final T maxValue;
 
-    public static <T> ComparableInterval<T> forType(Comparator<T> comparator, T minValue, T maxValue) {
-        return new ComparableInterval<>(comparator, minValue, maxValue, minValue, minValue);
+    public static <T> BoundInterval<T> forType(Comparator<T> comparator, T minValue, T maxValue) {
+        return new BoundInterval<>(comparator, minValue, maxValue, minValue, minValue);
     }
 
     public Interval<T> of(T start, T end) {
-        return new ComparableInterval<>(this.comparator, this.minValue, this.maxValue, start, end);
+        return new BoundInterval<>(this.comparator, this.minValue, this.maxValue, start, end);
     }
 
-    private ComparableInterval(Comparator<T> comparator, T minValue, T maxValue, T start, T end) {
+    private BoundInterval(Comparator<T> comparator, T minValue, T maxValue, T start, T end) {
         this.comparator = comparator;
         this.minValue = minValue;
         this.maxValue = maxValue;
-        start = start == null ? minValue : start;
-        end = end == null ? maxValue : end;
+        start = start == null || comparator.compare(start, minValue) < 0 ? minValue : start;
+        end = end == null || comparator.compare(end, maxValue) > 0 ? maxValue : end;
         if (comparator.compare(start, end) > 0) {
             end = start;
         }

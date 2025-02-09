@@ -5,17 +5,18 @@ import no.kreso.Interval;
 import java.time.LocalDate;
 
 /**
- * An implementation of Interval that treats null arguments for lower bound as -infinity and as +infinity for upper
- * bound.
+ * An implementation of Interval for LocalDate that treats null arguments for lower bound as -infinity and as +infinity
+ * for upper bound. Lower bound is treated as inclusive and upper bound as exclusive. Unions between disjoint intervals
+ * are not supported and return the empty interval.
  */
-public class NullableInterval implements Interval<LocalDate> {
+public class UnboundInterval implements Interval<LocalDate> {
 
-    private static final NullableInterval EMPTY_INTERVAL = new NullableInterval(LocalDate.EPOCH, LocalDate.EPOCH);
+    private static final UnboundInterval EMPTY_INTERVAL = new UnboundInterval(LocalDate.EPOCH, LocalDate.EPOCH);
 
     private final LocalDate start;
     private final LocalDate end;
 
-    private NullableInterval(LocalDate start, LocalDate end) {
+    private UnboundInterval(LocalDate start, LocalDate end) {
         this.start = start;
         this.end = end;
     }
@@ -24,7 +25,7 @@ public class NullableInterval implements Interval<LocalDate> {
         if (start != null && end != null && start.isAfter(end)) {
             return EMPTY_INTERVAL;
         }
-        return new NullableInterval(start, end);
+        return new UnboundInterval(start, end);
     }
 
     @Override
