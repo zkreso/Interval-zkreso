@@ -1,4 +1,4 @@
-package no.kreso.comparableinterval;
+package no.kreso.implementations;
 
 import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
