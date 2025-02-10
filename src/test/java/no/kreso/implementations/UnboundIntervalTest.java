@@ -145,6 +145,17 @@ class UnboundIntervalTest {
         union = interval.union(other);
         assertNull(union.end());
         assertNull(union.start());
+
+        interval = UnboundInterval.of(feb5th, feb5th);
+        other = UnboundInterval.of(feb20th, feb20th);
+        union = interval.union(other);
+        assertTrue(union.isEmpty());
+
+        interval = UnboundInterval.of(feb5th, feb5th);
+        other = UnboundInterval.of(feb10th, feb11th);
+        union = interval.union(other);
+        assertTrue(union.start().isEqual(feb10th));
+        assertTrue(union.end().isEqual(feb11th));
     }
 
     @Test

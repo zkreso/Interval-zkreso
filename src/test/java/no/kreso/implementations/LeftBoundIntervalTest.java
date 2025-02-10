@@ -102,6 +102,12 @@ public class LeftBoundIntervalTest {
         union = interval.union(other);
         assertTrue(union.start().isEqual(feb5th));
         assertNull(union.end());
+
+        interval = LeftBoundInterval.of(feb5th, feb5th);
+        other = LeftBoundInterval.of(feb10th, null);
+        union = interval.union(other);
+        assertTrue(union.start().isEqual(feb10th));
+        assertNull(union.end());
     }
 
     @Test

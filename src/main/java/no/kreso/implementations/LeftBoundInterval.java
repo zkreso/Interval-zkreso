@@ -88,8 +88,11 @@ public class LeftBoundInterval implements Interval<LocalDate> {
 
     @Override
     public Interval<LocalDate> union(Interval<LocalDate> other) {
-        if (this.isEmpty() || other.isEmpty()) {
-            return EMPTY_INTERVAL;
+        if (this.isEmpty()) {
+            return other;
+        }
+        if (other.isEmpty()) {
+            return this;
         }
         // If this ends before other begins,
         boolean endsBeforeOtherStarts = this.end != null && compareTo(this.end, other.start()) < 0;
