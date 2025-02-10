@@ -102,5 +102,11 @@ class DateIntervalTest {
         other = DATE_INTERVAL.of(feb5th, feb5th);
         intersection = interval.intersection(other);
         assertTrue(intersection.isEmpty());
+
+        // Make sure end is exclusive
+        interval = DATE_INTERVAL.of(feb5th, feb10th);
+        other = DATE_INTERVAL.of(feb10th, feb20th);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.isEmpty());
     }
 }

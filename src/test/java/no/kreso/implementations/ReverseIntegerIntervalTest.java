@@ -96,5 +96,11 @@ public class ReverseIntegerIntervalTest {
         other = REVERSE_INTEGER_INTERVAL.of(5, 5);
         intersection = interval.intersection(other);
         assertTrue(intersection.isEmpty());
+
+        // Make sure end is exclusive
+        interval = REVERSE_INTEGER_INTERVAL.of(10, 5);
+        other = REVERSE_INTEGER_INTERVAL.of(20, 10);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.isEmpty());
     }
 }

@@ -95,5 +95,11 @@ class IntegerIntervalTest {
         other = INTEGER_INTERVAL.of(5, 5);
         intersection = interval.intersection(other);
         assertTrue(intersection.isEmpty());
+
+        // Make sure end is exclusive
+        interval = INTEGER_INTERVAL.of(5, 10);
+        other = INTEGER_INTERVAL.of(10, 20);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.isEmpty());
     }
 }

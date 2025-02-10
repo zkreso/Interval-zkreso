@@ -241,5 +241,10 @@ class UnboundIntervalTest {
         intersection = interval.intersection(other);
         assertNull(intersection.start());
         assertNull(intersection.end());
+
+        interval = UnboundInterval.of(null, feb10th);
+        other = UnboundInterval.of(feb10th, null);
+        intersection = interval.intersection(other);
+        assertTrue(intersection.isEmpty());
     }
 }
