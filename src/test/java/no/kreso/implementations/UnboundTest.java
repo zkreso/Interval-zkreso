@@ -1,6 +1,5 @@
 package no.kreso.implementations;
 
-import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -8,7 +7,7 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UnboundIntervalTest {
+class UnboundTest {
     
     record Params<T>(IntervalOperations<T> unbound, T five,T ten, T eleven, T twenty) { }
 

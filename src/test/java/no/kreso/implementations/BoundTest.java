@@ -7,8 +7,8 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IntegerIntervalTest {
-    
+class BoundTest {
+
     record Params<T>(IntervalOperations<T> bound, T five, T ten, T eleven, T twenty, T minValue, T maxValue) { }
 
     @Test
