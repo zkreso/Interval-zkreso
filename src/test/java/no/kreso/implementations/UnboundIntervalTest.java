@@ -4,258 +4,292 @@ import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnboundIntervalTest {
-
-    private final LocalDate feb5th = LocalDate.of(2025, 2, 5);
-    private final LocalDate feb10th = LocalDate.of(2025, 2, 10);
-    private final LocalDate feb11th = LocalDate.of(2025, 2, 11);
-    private final LocalDate feb20th = LocalDate.of(2025, 2, 20);
+    
+    record Params<T>(IntervalOperations<T> unbound, T five,T ten, T eleven, T twenty) { }
 
     @Test
-    public void creation() {
-        Interval<LocalDate> interval = UnboundInterval.of(feb5th, feb10th);
-        assertTrue(interval.start().isEqual(feb5th));
-        assertTrue(interval.end().isEqual(feb10th));
+    public void testDate() {
+        Params<LocalDate> params = new Params<>(
+                new Unbound<>(Comparator.<LocalDate>naturalOrder()),
+                LocalDate.of(2025, 2, 5),
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 11),
+                LocalDate.of(2025, 2, 20));
+        runTests(params);
     }
 
     @Test
-    public void creationWithNull() {
-        Interval<LocalDate> interval;
+    public void testInteger() {
+        Params<Integer> params = new Params<>(
+                new Unbound<>(Comparator.<Integer>naturalOrder()),
+                5, 10, 11, 20);
+        runTests(params);
+    }
 
-        interval = UnboundInterval.of(null, feb10th);
+    @Test
+    public void testIntegerReverse() {
+        Params<Integer> params = new Params<>(
+                new Unbound<>(Comparator.<Integer>reverseOrder()),
+                20, 11, 10, 5);
+        runTests(params);
+    }
+
+    public <T> void runTests(Params<T> params) {
+        creation(params);
+        creationWithNull(params);
+        creationWithReversedParameters(params);
+        subsetOf(params);
+        union(params);
+        unionDisjoint(params);
+        intersection(params);
+    }
+
+    public <T> void creation(Params<T> params) {
+        IntervalInterface<T> interval = params.unbound.validate(params.five, params.ten);
+        assertEquals(interval.start(), params.five);
+        assertEquals(interval.end(), params.ten);
+    }
+
+    public <T> void creationWithNull(Params<T> params) {
+        IntervalInterface<T> interval;
+        IntervalOperations<T> unbound = params.unbound();
+
+        interval = unbound.validate(null, params.ten);
         assertNull(interval.start());
-        assertTrue(interval.end().isEqual(feb10th));
-        assertFalse(interval.isEmpty());
+        assertEquals(interval.end(), params.ten);
+        assertFalse(unbound.isEmpty(interval));
 
-        interval = UnboundInterval.of(feb10th, null);
-        assertTrue(interval.start().isEqual(feb10th));
+        interval = unbound.validate(params.ten, null);
+        assertEquals(interval.start(), params.ten);
         assertNull(interval.end());
-        assertFalse(interval.isEmpty());
+        assertFalse(unbound.isEmpty(interval));
 
-        interval = UnboundInterval.of(null, null);
+        interval = unbound.validate(null, null);
         assertNull(interval.start());
         assertNull(interval.end());
-        assertFalse(interval.isEmpty());
+        assertFalse(unbound.isEmpty(interval));
     }
 
-    @Test
-    public void creationWithReversedParameters() {
-        Interval<LocalDate> interval;
+    public <T> void creationWithReversedParameters(Params<T> params) {
+        IntervalInterface<T> interval;
+        IntervalOperations<T> unbound = params.unbound();
 
-        interval = UnboundInterval.of(feb10th, feb5th);
-        assertTrue(interval.isEmpty());
+        interval = unbound.validate(params.ten, params.five);
+        assertTrue(unbound.isEmpty(interval));
 
-        interval = UnboundInterval.of(feb5th, feb5th);
-        assertTrue(interval.isEmpty());
+        interval = unbound.validate(params.five, params.five);
+        assertTrue(unbound.isEmpty(interval));
 
-        interval = UnboundInterval.of(feb10th, null);
-        assertFalse(interval.isEmpty());
+        interval = unbound.validate(params.ten, null);
+        assertFalse(unbound.isEmpty(interval));
 
-        interval = UnboundInterval.of(null, feb10th);
-        assertFalse(interval.isEmpty());
+        interval = unbound.validate(null, params.ten);
+        assertFalse(unbound.isEmpty(interval));
     }
 
-    @Test
-    public void subsetOf() {
-        Interval<LocalDate> emptySet = UnboundInterval.of(feb5th, feb5th);
-        Interval<LocalDate> interval;
+    public <T> void subsetOf(Params<T> params) {
+        IntervalOperations<T> unbound = params.unbound();
+        IntervalInterface<T> emptySet = unbound.validate(params.five, params.five);
+        IntervalInterface<T> interval;
 
         // 1. A set is always a subset of itself
         // 2. The empty set is a subset of all other sets
         // 3. The empty set has only the empty set as a subset
-        interval = UnboundInterval.of(feb5th, feb10th);
-        assertTrue(interval.subsetOf(interval));
-        assertTrue(emptySet.subsetOf(interval));
-        assertFalse(interval.subsetOf(emptySet));
+        interval = unbound.validate(params.five, params.ten);
+        assertTrue(unbound.subsetOf(interval, interval));
+        assertTrue(unbound.subsetOf(emptySet, interval));
+        assertFalse(unbound.subsetOf(interval, emptySet));
 
-        interval = UnboundInterval.of(feb5th, null);
-        assertTrue(interval.subsetOf(interval));
-        assertTrue(emptySet.subsetOf(interval));
-        assertFalse(interval.subsetOf(emptySet));
+        interval = unbound.validate(params.five, null);
+        assertTrue(unbound.subsetOf(interval, interval));
+        assertTrue(unbound.subsetOf(emptySet, interval));
+        assertFalse(unbound.subsetOf(interval, emptySet));
 
-        interval = UnboundInterval.of(null, feb5th);
-        assertTrue(interval.subsetOf(interval));
-        assertTrue(emptySet.subsetOf(interval));
-        assertFalse(interval.subsetOf(emptySet));
+        interval = unbound.validate(null, params.five);
+        assertTrue(unbound.subsetOf(interval, interval));
+        assertTrue(unbound.subsetOf(emptySet, interval));
+        assertFalse(unbound.subsetOf(interval, emptySet));
 
-        interval = UnboundInterval.of(null, null);
-        assertTrue(interval.subsetOf(interval));
-        assertTrue(emptySet.subsetOf(interval));
-        assertFalse(interval.subsetOf(emptySet));
+        interval = unbound.validate(null, null);
+        assertTrue(unbound.subsetOf(interval, interval));
+        assertTrue(unbound.subsetOf(emptySet, interval));
+        assertFalse(unbound.subsetOf(interval, emptySet));
 
-        interval = UnboundInterval.of(feb20th, feb20th);
-        assertTrue(interval.subsetOf(interval));
-        assertTrue(emptySet.subsetOf(interval));
-        assertTrue(interval.subsetOf(emptySet));
+        interval = unbound.validate(params.twenty, params.twenty);
+        assertTrue(unbound.subsetOf(interval, interval));
+        assertTrue(unbound.subsetOf(emptySet, interval));
+        assertTrue(unbound.subsetOf(interval, emptySet));
     }
 
-    @Test
-    public void union() {
-        Interval<LocalDate> interval;
-        Interval<LocalDate> other;
-        Interval<LocalDate> union;
+    public <T> void union(Params<T> params) {
+        IntervalOperations<T> unbound = params.unbound();
+        IntervalInterface<T> interval;
+        IntervalInterface<T> other;
+        IntervalInterface<T> union;
 
-        interval = UnboundInterval.of(feb5th, feb10th);
-        other = UnboundInterval.of(feb10th, feb20th);
-        union = interval.union(other);
-        assertTrue(union.start().isEqual(feb5th));
-        assertTrue(union.end().isEqual(feb20th));
+        interval = unbound.validate(params.five, params.ten);
+        other = unbound.validate(params.ten, params.twenty);
+        union = unbound.union(interval, other);
+        assertEquals(union.start(), params.five);
+        assertEquals(union.end(), params.twenty);
 
-        interval = UnboundInterval.of(null, feb10th);
-        other = UnboundInterval.of(feb10th, feb20th);
-        union = interval.union(other);
+        interval = unbound.validate(null, params.ten);
+        other = unbound.validate(params.ten, params.twenty);
+        union = unbound.union(interval, other);
         assertNull(union.start());
-        assertTrue(union.end().isEqual(feb20th));
+        assertEquals(union.end(), params.twenty);
 
-        interval = UnboundInterval.of(feb5th, feb10th);
-        other = UnboundInterval.of(null, feb20th);
-        union = interval.union(other);
+        interval = unbound.validate(params.five, params.ten);
+        other = unbound.validate(null, params.twenty);
+        union = unbound.union(interval, other);
         assertNull(union.start());
-        assertTrue(union.end().isEqual(feb20th));
+        assertEquals(union.end(), params.twenty);
 
-        interval = UnboundInterval.of(feb5th, null);
-        other = UnboundInterval.of(feb10th, feb20th);
-        union = interval.union(other);
-        assertTrue(union.start().isEqual(feb5th));
+        interval = unbound.validate(params.five, null);
+        other = unbound.validate(params.ten, params.twenty);
+        union = unbound.union(interval, other);
+        assertEquals(union.start(), params.five);
         assertNull(union.end());
 
-        interval = UnboundInterval.of(feb5th, feb10th);
-        other = UnboundInterval.of(feb10th, null);
-        union = interval.union(other);
-        assertTrue(union.start().isEqual(feb5th));
+        interval = unbound.validate(params.five, params.ten);
+        other = unbound.validate(params.ten, null);
+        union = unbound.union(interval, other);
+        assertEquals(union.start(), params.five);
         assertNull(union.end());
 
-        interval = UnboundInterval.of(null, feb10th);
-        other = UnboundInterval.of(feb10th, null);
-        union = interval.union(other);
-        assertNull(union.end());
-        assertNull(union.start());
-
-        interval = UnboundInterval.of(null, feb10th);
-        other = UnboundInterval.of(null, null);
-        union = interval.union(other);
+        interval = unbound.validate(null, params.ten);
+        other = unbound.validate(params.ten, null);
+        union = unbound.union(interval, other);
         assertNull(union.end());
         assertNull(union.start());
 
-        interval = UnboundInterval.of(null, null);
-        other = UnboundInterval.of(null, null);
-        union = interval.union(other);
+        interval = unbound.validate(null, params.ten);
+        other = unbound.validate(null, null);
+        union = unbound.union(interval, other);
         assertNull(union.end());
         assertNull(union.start());
 
-        interval = UnboundInterval.of(feb5th, feb5th);
-        other = UnboundInterval.of(feb20th, feb20th);
-        union = interval.union(other);
-        assertTrue(union.isEmpty());
+        interval = unbound.validate(null, null);
+        other = unbound.validate(null, null);
+        union = unbound.union(interval, other);
+        assertNull(union.end());
+        assertNull(union.start());
 
-        interval = UnboundInterval.of(feb5th, feb5th);
-        other = UnboundInterval.of(feb10th, feb11th);
-        union = interval.union(other);
-        assertTrue(union.start().isEqual(feb10th));
-        assertTrue(union.end().isEqual(feb11th));
+        interval = unbound.validate(params.five, params.five);
+        other = unbound.validate(params.twenty, params.twenty);
+        union = unbound.union(interval, other);
+        assertTrue(unbound.isEmpty(union));
+
+        interval = unbound.validate(params.five, params.five);
+        other = unbound.validate(params.ten, params.eleven);
+        union = unbound.union(interval, other);
+        assertEquals(union.start(), params.ten);
+        assertEquals(union.end(), params.eleven);
     }
 
-    @Test
-    public void unionDisjoint() {
-        Interval<LocalDate> interval;
-        Interval<LocalDate> other;
-        Interval<LocalDate> union;
+    public <T> void unionDisjoint(Params<T> params) {
+        IntervalOperations<T> unbound = params.unbound();
+        IntervalInterface<T> interval;
+        IntervalInterface<T> other;
+        IntervalInterface<T> union;
 
         // Unions of disjoint intervals should return the empty interval
         // Also make sure that it is exclusive
-        interval = UnboundInterval.of(feb5th, feb10th);
-        other = UnboundInterval.of(feb11th, feb20th);
-        union = interval.union(other);
-        assertTrue(union.isEmpty());
+        interval = unbound.validate(params.five, params.ten);
+        other = unbound.validate(params.eleven, params.twenty);
+        union = unbound.union(interval, other);
+        assertTrue(unbound.isEmpty(union));
 
-        interval = UnboundInterval.of(null, feb10th);
-        other = UnboundInterval.of(feb11th, feb20th);
-        union = interval.union(other);
-        assertTrue(union.isEmpty());
+        interval = unbound.validate(null, params.ten);
+        other = unbound.validate(params.eleven, params.twenty);
+        union = unbound.union(interval, other);
+        assertTrue(unbound.isEmpty(union));
 
-        interval = UnboundInterval.of(feb5th, feb10th);
-        other = UnboundInterval.of(feb11th, null);
-        union = interval.union(other);
-        assertTrue(union.isEmpty());
+        interval = unbound.validate(params.five, params.ten);
+        other = unbound.validate(params.eleven, null);
+        union = unbound.union(interval, other);
+        assertTrue(unbound.isEmpty(union));
 
-        interval = UnboundInterval.of(null, feb10th);
-        other = UnboundInterval.of(feb11th, null);
-        union = interval.union(other);
-        assertTrue(union.isEmpty());
+        interval = unbound.validate(null, params.ten);
+        other = unbound.validate(params.eleven, null);
+        union = unbound.union(interval, other);
+        assertTrue(unbound.isEmpty(union));
     }
 
-    @Test
-    public void intersection() {
-        Interval<LocalDate> interval;
-        Interval<LocalDate> other;
-        Interval<LocalDate> intersection;
+    public <T> void intersection(Params<T> params) {
+        IntervalOperations<T> unbound = params.unbound();
+        IntervalInterface<T> interval;
+        IntervalInterface<T> other;
+        IntervalInterface<T> intersection;
 
-        interval = UnboundInterval.of(feb5th, feb11th);
-        other = UnboundInterval.of(feb10th, feb20th);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb10th));
-        assertTrue(intersection.end().isEqual(feb11th));
+        interval = unbound.validate(params.five, params.eleven);
+        other = unbound.validate(params.ten, params.twenty);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.ten);
+        assertEquals(intersection.end(), params.eleven);
 
-        interval = UnboundInterval.of(null, feb11th);
-        other = UnboundInterval.of(feb10th, feb20th);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb10th));
-        assertTrue(intersection.end().isEqual(feb11th));
+        interval = unbound.validate(null, params.eleven);
+        other = unbound.validate(params.ten, params.twenty);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.ten);
+        assertEquals(intersection.end(), params.eleven);
 
-        interval = UnboundInterval.of(feb5th, feb11th);
-        other = UnboundInterval.of(feb10th, null);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb10th));
-        assertTrue(intersection.end().isEqual(feb11th));
+        interval = unbound.validate(params.five, params.eleven);
+        other = unbound.validate(params.ten, null);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.ten);
+        assertEquals(intersection.end(), params.eleven);
 
-        interval = UnboundInterval.of(null, feb11th);
-        other = UnboundInterval.of(feb10th, null);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb10th));
-        assertTrue(intersection.end().isEqual(feb11th));
+        interval = unbound.validate(null, params.eleven);
+        other = unbound.validate(params.ten, null);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.ten);
+        assertEquals(intersection.end(), params.eleven);
 
-        interval = UnboundInterval.of(feb5th, null);
-        other = UnboundInterval.of(feb10th, feb20th);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb10th));
-        assertTrue(intersection.end().isEqual(feb20th));
+        interval = unbound.validate(params.five, null);
+        other = unbound.validate(params.ten, params.twenty);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.ten);
+        assertEquals(intersection.end(), params.twenty);
 
-        interval = UnboundInterval.of(feb5th, feb11th);
-        other = UnboundInterval.of(null, feb20th);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb5th));
-        assertTrue(intersection.end().isEqual(feb11th));
+        interval = unbound.validate(params.five, params.eleven);
+        other = unbound.validate(null, params.twenty);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.five);
+        assertEquals(intersection.end(), params.eleven);
 
-        interval = UnboundInterval.of(feb5th, null);
-        other = UnboundInterval.of(null, feb20th);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb5th));
-        assertTrue(intersection.end().isEqual(feb20th));
+        interval = unbound.validate(params.five, null);
+        other = unbound.validate(null, params.twenty);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.five);
+        assertEquals(intersection.end(), params.twenty);
 
-        interval = UnboundInterval.of(null, null);
-        other = UnboundInterval.of(null, feb20th);
-        intersection = interval.intersection(other);
+        interval = unbound.validate(null, null);
+        other = unbound.validate(null, params.twenty);
+        intersection = unbound.intersection(interval, other);
         assertNull(intersection.start());
-        assertTrue(intersection.end().isEqual(feb20th));
+        assertEquals(intersection.end(), params.twenty);
 
-        interval = UnboundInterval.of(feb5th, null);
-        other = UnboundInterval.of(null, null);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.start().isEqual(feb5th));
+        interval = unbound.validate(params.five, null);
+        other = unbound.validate(null, null);
+        intersection = unbound.intersection(interval, other);
+        assertEquals(intersection.start(), params.five);
         assertNull(intersection.end());
 
-        interval = UnboundInterval.of(null, null);
-        other = UnboundInterval.of(null, null);
-        intersection = interval.intersection(other);
+        interval = unbound.validate(null, null);
+        other = unbound.validate(null, null);
+        intersection = unbound.intersection(interval, other);
         assertNull(intersection.start());
         assertNull(intersection.end());
 
-        interval = UnboundInterval.of(null, feb10th);
-        other = UnboundInterval.of(feb10th, null);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.isEmpty());
+        interval = unbound.validate(null, params.ten);
+        other = unbound.validate(params.ten, null);
+        intersection = unbound.intersection(interval, other);
+        assertTrue(unbound.isEmpty(intersection));
     }
 }

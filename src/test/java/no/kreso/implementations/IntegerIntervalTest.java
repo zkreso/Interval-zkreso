@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IntegerIntervalTest {
     
-    record Params<T>(Bound<T> bound, T five, T ten, T eleven, T twenty, T minValue, T maxValue) { }
+    record Params<T>(IntervalOperations<T> bound, T five, T ten, T eleven, T twenty, T minValue, T maxValue) { }
 
     @Test
     void testInteger() {
