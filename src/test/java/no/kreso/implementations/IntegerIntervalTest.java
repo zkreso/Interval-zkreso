@@ -1,105 +1,105 @@
 package no.kreso.implementations;
 
-import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
 
-import static no.kreso.implementations.IntervalFactory.*;
+import java.util.Comparator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class IntegerIntervalTest {
 
+    private final Bound<Integer> bound = new Bound<>(Comparator.naturalOrder(), Integer.MIN_VALUE, Integer.MAX_VALUE);
+
     @Test
     void creation() {
-        Interval<Integer> interval = INTEGER_INTERVAL.of(5, 10);
+        IntervalInterface<Integer> interval = bound.validate(5, 10);
         assertEquals(5, interval.start());
         assertEquals(10, interval.end());
     }
 
     @Test
     void creationWithNull() {
-        Interval<Integer> interval;
+        IntervalInterface<Integer> interval;
 
-        interval = INTEGER_INTERVAL.of(null, 10);
+        interval = bound.validate(null, 10);
         assertEquals(Integer.MIN_VALUE, interval.start());
         assertEquals(10, interval.end());
 
-        interval = INTEGER_INTERVAL.of(5, null);
+        interval = bound.validate(5, null);
         assertEquals(5, interval.start());
         assertEquals(Integer.MAX_VALUE, interval.end());
 
-        interval = INTEGER_INTERVAL.of(null, null);
+        interval = bound.validate(null, null);
         assertEquals(Integer.MIN_VALUE, interval.start());
         assertEquals(Integer.MAX_VALUE, interval.end());
     }
 
     @Test
     void creationWithReversedParameters() {
-        Interval<Integer> interval = INTEGER_INTERVAL.of(10, 5);
-        assertTrue(interval.isEmpty());
+        IntervalInterface<Integer> interval = bound.validate(10, 5);
+        assertTrue(bound.isEmpty(interval));
     }
 
     @Test
     void subsetOf() {
-        Interval<Integer> emptySet;
+        IntervalInterface<Integer> emptySet;
 
-        Interval<Integer> interval = INTEGER_INTERVAL.of(5, 10);
-        emptySet = INTEGER_INTERVAL.of(20, 20);
+        IntervalInterface<Integer> interval = bound.validate(5, 10);
+        emptySet = bound.validate(20, 20);
 
-        // A set is always its own subset
-        assertTrue(interval.subsetOf(interval));
+        assertTrue(bound.subsetOf(interval, interval));
 
-        // The empty set is a subset of all other sets
-        Interval<Integer> otherEmptySet = INTEGER_INTERVAL.of(10, 10);
-        assertTrue(emptySet.subsetOf(interval));
-        assertTrue(emptySet.subsetOf(otherEmptySet));
+        IntervalInterface<Integer> otherEmptySet = bound.validate(10, 10);
+        assertTrue(bound.subsetOf(emptySet, interval));
+        assertTrue(bound.subsetOf(emptySet, otherEmptySet));
 
-        // An empty set has only the empty set as a subset
-        emptySet = INTEGER_INTERVAL.of(10, 10);
-        assertFalse(interval.subsetOf(emptySet));
+        emptySet = bound.validate(10, 10);
+        assertFalse(bound.subsetOf(interval, emptySet));
+        assertFalse(bound.subsetOf(interval, otherEmptySet));
     }
 
     @Test
     void union() {
-        Interval<Integer> interval;
-        Interval<Integer> other;
-        Interval<Integer> union;
+        IntervalInterface<Integer> interval;
+        IntervalInterface<Integer> other;
+        IntervalInterface<Integer> union;
 
-        interval = INTEGER_INTERVAL.of(5, 10);
-        other = INTEGER_INTERVAL.of(5, 20);
-        union = interval.union(other);
+        interval = bound.validate(5, 10);
+        other = bound.validate(5, 20);
+        union = bound.union(interval, other);
         assertEquals(5, union.start());
         assertEquals(20, union.end());
 
         // Unions of disjoint intervals should return the empty interval
         // Also make sure that end is exclusive.
-        interval = INTEGER_INTERVAL.of(5, 10);
-        other = INTEGER_INTERVAL.of(11, 20);
-        union = interval.union(other);
-        assertTrue(union.isEmpty());
+        interval = bound.validate(5, 10);
+        other = bound.validate(11, 20);
+        union = bound.union(interval, other);
+        assertTrue(bound.isEmpty(union));
     }
 
     @Test
     void intersection() {
-        Interval<Integer> interval;
-        Interval<Integer> other;
-        Interval<Integer> intersection;
+        IntervalInterface<Integer> interval;
+        IntervalInterface<Integer> other;
+        IntervalInterface<Integer> intersection;
 
-        interval = INTEGER_INTERVAL.of(5, 11);
-        other = INTEGER_INTERVAL.of(10, 20);
-        intersection = interval.intersection(other);
+        interval = bound.validate(5, 11);
+        other = bound.validate(10, 20);
+        intersection = bound.intersection(interval, other);
         assertEquals(10, intersection.start());
         assertEquals(11, intersection.end());
 
         // Intersections with the empty set should return the empty set
-        interval = INTEGER_INTERVAL.of(5, 10);
-        other = INTEGER_INTERVAL.of(5, 5);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.isEmpty());
+        interval = bound.validate(5, 10);
+        other = bound.validate(5, 5);
+        intersection = bound.intersection(interval, other);
+        assertTrue(bound.isEmpty(intersection));
 
         // Make sure end is exclusive
-        interval = INTEGER_INTERVAL.of(5, 10);
-        other = INTEGER_INTERVAL.of(10, 20);
-        intersection = interval.intersection(other);
-        assertTrue(intersection.isEmpty());
+        interval = bound.validate(5, 10);
+        other = bound.validate(10, 20);
+        intersection = bound.intersection(interval, other);
+        assertTrue(bound.isEmpty(intersection));
     }
 }
