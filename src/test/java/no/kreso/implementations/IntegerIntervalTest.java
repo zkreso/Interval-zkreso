@@ -2,104 +2,140 @@ package no.kreso.implementations;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class IntegerIntervalTest {
-
-    private final Bound<Integer> bound = new Bound<>(Comparator.naturalOrder(), Integer.MIN_VALUE, Integer.MAX_VALUE);
+    
+    record Params<T>(Bound<T> bound, T five, T ten, T eleven, T twenty, T minValue, T maxValue) { }
 
     @Test
-    void creation() {
-        IntervalInterface<Integer> interval = bound.validate(5, 10);
-        assertEquals(5, interval.start());
-        assertEquals(10, interval.end());
+    void testInteger() {
+        Params<Integer> params = new Params<>(
+                new Bound<>(Comparator.naturalOrder(), Integer.MIN_VALUE, Integer.MAX_VALUE),
+                5, 10, 11, 20, Integer.MIN_VALUE, Integer.MAX_VALUE
+        );
+        runTests(params);
     }
 
     @Test
-    void creationWithNull() {
-        IntervalInterface<Integer> interval;
-
-        interval = bound.validate(null, 10);
-        assertEquals(Integer.MIN_VALUE, interval.start());
-        assertEquals(10, interval.end());
-
-        interval = bound.validate(5, null);
-        assertEquals(5, interval.start());
-        assertEquals(Integer.MAX_VALUE, interval.end());
-
-        interval = bound.validate(null, null);
-        assertEquals(Integer.MIN_VALUE, interval.start());
-        assertEquals(Integer.MAX_VALUE, interval.end());
+    void testIntegerReverse() {
+        Params<Integer> params = new Params<>(
+                new Bound<>(Comparator.reverseOrder(), Integer.MAX_VALUE, Integer.MIN_VALUE),
+                20, 11, 10, 5, Integer.MAX_VALUE, Integer.MIN_VALUE
+        );
+        runTests(params);
     }
 
     @Test
-    void creationWithReversedParameters() {
-        IntervalInterface<Integer> interval = bound.validate(10, 5);
-        assertTrue(bound.isEmpty(interval));
+    void testDate() {
+        Params<LocalDate> params = new Params<>(
+                new Bound<>(Comparator.naturalOrder(), LocalDate.MIN, LocalDate.MAX),
+                LocalDate.of(2025, 2, 5),
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 11),
+                LocalDate.of(2025, 2, 20),
+                LocalDate.MIN,
+                LocalDate.MAX
+        );
+        runTests(params);
     }
 
-    @Test
-    void subsetOf() {
-        IntervalInterface<Integer> emptySet;
-
-        IntervalInterface<Integer> interval = bound.validate(5, 10);
-        emptySet = bound.validate(20, 20);
-
-        assertTrue(bound.subsetOf(interval, interval));
-
-        IntervalInterface<Integer> otherEmptySet = bound.validate(10, 10);
-        assertTrue(bound.subsetOf(emptySet, interval));
-        assertTrue(bound.subsetOf(emptySet, otherEmptySet));
-
-        emptySet = bound.validate(10, 10);
-        assertFalse(bound.subsetOf(interval, emptySet));
-        assertFalse(bound.subsetOf(interval, otherEmptySet));
+    <T> void runTests(Params<T> params) {
+        creation(params);
+        creationWithNull(params);
+        creationWithReversedParameters(params);
+        subsetOf(params);
+        union(params);
+        intersection(params);
     }
 
-    @Test
-    void union() {
-        IntervalInterface<Integer> interval;
-        IntervalInterface<Integer> other;
-        IntervalInterface<Integer> union;
+    <T> void creation(Params<T> params) {
+        IntervalInterface<T> interval = params.bound().validate(params.five, params.ten);
+        assertEquals(params.five, interval.start());
+        assertEquals(params.ten, interval.end());
+    }
 
-        interval = bound.validate(5, 10);
-        other = bound.validate(5, 20);
-        union = bound.union(interval, other);
-        assertEquals(5, union.start());
-        assertEquals(20, union.end());
+    <T> void creationWithNull(Params<T> params) {
+        IntervalInterface<T> interval;
+
+        interval = params.bound().validate(null, params.ten);
+        assertEquals(params.minValue(), interval.start());
+        assertEquals(params.ten, interval.end());
+
+        interval = params.bound().validate(params.five, null);
+        assertEquals(params.five, interval.start());
+        assertEquals(params.maxValue(), interval.end());
+
+        interval = params.bound().validate(null, null);
+        assertEquals(params.minValue(), interval.start());
+        assertEquals(params.maxValue(), interval.end());
+    }
+
+    <T> void creationWithReversedParameters(Params<T> params) {
+        IntervalInterface<T> interval = params.bound().validate(params.ten, params.five);
+        assertTrue(params.bound().isEmpty(interval));
+    }
+
+    <T> void subsetOf(Params<T> params) {
+        IntervalInterface<T> emptySet;
+
+        IntervalInterface<T> interval = params.bound().validate(params.five, params.ten);
+        emptySet = params.bound().validate(params.twenty, params.twenty);
+
+        assertTrue(params.bound().subsetOf(interval, interval));
+
+        IntervalInterface<T> otherEmptySet = params.bound().validate(params.ten, params.ten);
+        assertTrue(params.bound().subsetOf(emptySet, interval));
+        assertTrue(params.bound().subsetOf(emptySet, otherEmptySet));
+
+        emptySet = params.bound().validate(params.ten, params.ten);
+        assertFalse(params.bound().subsetOf(interval, emptySet));
+        assertFalse(params.bound().subsetOf(interval, otherEmptySet));
+    }
+
+    <T> void union(Params<T> params) {
+        IntervalInterface<T> interval;
+        IntervalInterface<T> other;
+        IntervalInterface<T> union;
+
+        interval = params.bound().validate(params.five, params.ten);
+        other = params.bound().validate(params.five, params.twenty);
+        union = params.bound().union(interval, other);
+        assertEquals(params.five, union.start());
+        assertEquals(params.twenty, union.end());
 
         // Unions of disjoint intervals should return the empty interval
         // Also make sure that end is exclusive.
-        interval = bound.validate(5, 10);
-        other = bound.validate(11, 20);
-        union = bound.union(interval, other);
-        assertTrue(bound.isEmpty(union));
+        interval = params.bound().validate(params.five, params.ten);
+        other = params.bound().validate(params.eleven, params.twenty);
+        union = params.bound().union(interval, other);
+        assertTrue(params.bound().isEmpty(union));
     }
 
-    @Test
-    void intersection() {
-        IntervalInterface<Integer> interval;
-        IntervalInterface<Integer> other;
-        IntervalInterface<Integer> intersection;
+    <T> void intersection(Params<T> params) {
+        IntervalInterface<T> interval;
+        IntervalInterface<T> other;
+        IntervalInterface<T> intersection;
 
-        interval = bound.validate(5, 11);
-        other = bound.validate(10, 20);
-        intersection = bound.intersection(interval, other);
-        assertEquals(10, intersection.start());
-        assertEquals(11, intersection.end());
+        interval = params.bound().validate(params.five, params.eleven);
+        other = params.bound().validate(params.ten, params.twenty);
+        intersection = params.bound().intersection(interval, other);
+        assertEquals(params.ten, intersection.start());
+        assertEquals(params.eleven, intersection.end());
 
         // Intersections with the empty set should return the empty set
-        interval = bound.validate(5, 10);
-        other = bound.validate(5, 5);
-        intersection = bound.intersection(interval, other);
-        assertTrue(bound.isEmpty(intersection));
+        interval = params.bound().validate(params.five, params.ten);
+        other = params.bound().validate(params.five, params.five);
+        intersection = params.bound().intersection(interval, other);
+        assertTrue(params.bound().isEmpty(intersection));
 
         // Make sure end is exclusive
-        interval = bound.validate(5, 10);
-        other = bound.validate(10, 20);
-        intersection = bound.intersection(interval, other);
-        assertTrue(bound.isEmpty(intersection));
+        interval = params.bound().validate(params.five, params.ten);
+        other = params.bound().validate(params.ten, params.twenty);
+        intersection = params.bound().intersection(interval, other);
+        assertTrue(params.bound().isEmpty(intersection));
     }
 }
