@@ -75,6 +75,22 @@ public class Unbound<T> implements IntervalOperations<T> {
         return IntervalRecord.of(start, comparator.compare(start, end) > 0 ? start : end);
     }
 
+    private T minStart(T fst, T snd) {
+        return compareStart(fst, snd) < 0 ? fst : snd;
+    }
+
+    private T minEnd(T fst, T snd) {
+        return compareEnd(fst, snd) < 0 ? fst : snd;
+    }
+
+    private T maxStart(T fst, T snd) {
+        return compareStart(fst, snd) > 0 ? fst : snd;
+    }
+
+    private T maxEnd(T fst, T snd) {
+        return compareEnd(fst, snd) > 0 ? fst : snd;
+    }
+
     private int compareEnd(T fst, T snd) {
         if (fst == null && snd == null) {
             return 0;
@@ -93,21 +109,5 @@ public class Unbound<T> implements IntervalOperations<T> {
             return (fst == null) ? -1 : 1;
         }
         return comparator.compare(fst, snd);
-    }
-
-    private T minStart(T fst, T snd) {
-        return compareStart(fst, snd) < 0 ? fst : snd;
-    }
-
-    private T minEnd(T fst, T snd) {
-        return compareEnd(fst, snd) < 0 ? fst : snd;
-    }
-
-    private T maxStart(T fst, T snd) {
-        return compareStart(fst, snd) > 0 ? fst : snd;
-    }
-
-    private T maxEnd(T fst, T snd) {
-        return compareEnd(fst, snd) > 0 ? fst : snd;
     }
 }
