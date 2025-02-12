@@ -1,5 +1,6 @@
 package no.kreso.implementations;
 
+import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -7,9 +8,9 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LeftBoundIntervalTest {
+public class LeftBoundTest {
 
-    record Params<T>(IntervalOperations<T> leftBound, T five, T ten, T eleven, T twenty) { }
+    record Params<T>(IntervalOperations<T> bound, T five, T ten, T eleven, T twenty) { }
 
     @Test
     public void testDate() {
@@ -46,15 +47,15 @@ public class LeftBoundIntervalTest {
     }
 
     public <T> void creation(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> interval = bound.validate(params.five, params.ten);
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> interval = bound.validate(params.five, params.ten);
         assertEquals(interval.start(), params.five);
         assertEquals(interval.end(), params.ten);
     }
 
     public <T> void creationWithNull(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> interval;
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> interval;
 
         interval = bound.validate(null, params.ten);
         assertTrue(bound.isEmpty(interval));
@@ -69,17 +70,17 @@ public class LeftBoundIntervalTest {
     }
 
     public <T> void creationWithReversedParameters(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> interval;
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> interval;
 
         interval = bound.validate(params.ten, params.five);
         assertTrue(bound.isEmpty(interval));
     }
 
     public <T> void subsetOf(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> emptySet = bound.validate(params.five, params.five);
-        IntervalInterface<T> interval;
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> emptySet = bound.validate(params.five, params.five);
+        Interval<T> interval;
 
         // 1. A set is always a subset of itself
         // 2. The empty set is a subset of all other sets
@@ -111,10 +112,10 @@ public class LeftBoundIntervalTest {
     }
 
     public <T> void union(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> interval;
-        IntervalInterface<T> other;
-        IntervalInterface<T> union;
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> interval;
+        Interval<T> other;
+        Interval<T> union;
 
         interval = bound.validate(params.five, params.ten);
         other = bound.validate(params.ten, params.twenty);
@@ -142,10 +143,10 @@ public class LeftBoundIntervalTest {
     }
 
     public <T> void unionDisjoint(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> interval;
-        IntervalInterface<T> other;
-        IntervalInterface<T> union;
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> interval;
+        Interval<T> other;
+        Interval<T> union;
 
         // Unions of disjoint intervals should return the empty interval
         // Also make sure that it is exclusive
@@ -161,10 +162,10 @@ public class LeftBoundIntervalTest {
     }
 
     public <T> void intersection(Params<T> params) {
-        IntervalOperations<T> bound = params.leftBound();
-        IntervalInterface<T> interval;
-        IntervalInterface<T> other;
-        IntervalInterface<T> intersection;
+        IntervalOperations<T> bound = params.bound();
+        Interval<T> interval;
+        Interval<T> other;
+        Interval<T> intersection;
 
         interval = bound.validate(params.five, params.eleven);
         other = bound.validate(params.ten, params.twenty);

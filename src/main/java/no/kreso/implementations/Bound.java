@@ -1,6 +1,6 @@
 package no.kreso.implementations;
 
-import no.kreso.IntervalRecord;
+import no.kreso.Interval;
 
 import java.util.Comparator;
 
@@ -17,7 +17,7 @@ public final class Bound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public boolean subsetOf(IntervalInterface<T> left, IntervalInterface<T> right) {
+    public boolean subsetOf(Interval<T> left, Interval<T> right) {
         if (isEmpty(left)) {
             return true;
         }
@@ -27,19 +27,19 @@ public final class Bound<T> implements IntervalOperations<T> {
         return compareStart(left.start(), right.start()) >= 0 && compareEnd(left.end(), right.end()) <= 0;
     }
 
-    public IntervalInterface<T> validate(T start, T end) {
+    public Interval<T> validate(T start, T end) {
         start = sanitizeStart(start);
         end = maxEnd(start, end);
-        return IntervalRecord.of(start, end);
+        return Interval.of(start, end);
     }
 
     @Override
-    public boolean isEmpty(IntervalInterface<T> interval) {
+    public boolean isEmpty(Interval<T> interval) {
         return comparator.compare(sanitizeStart(interval.start()), sanitizeEnd(interval.end())) == 0;
     }
 
     @Override
-    public IntervalInterface<T> intersection(IntervalInterface<T> left, IntervalInterface<T> right) {
+    public Interval<T> intersection(Interval<T> left, Interval<T> right) {
         if (isEmpty(left)) {
             return left;
         }
@@ -53,7 +53,7 @@ public final class Bound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public IntervalInterface<T> union(IntervalInterface<T> left, IntervalInterface<T> right) {
+    public Interval<T> union(Interval<T> left, Interval<T> right) {
         if (isEmpty(left)) {
             return right;
         }

@@ -1,5 +1,6 @@
 package no.kreso.implementations;
 
+import no.kreso.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -49,13 +50,13 @@ class UnboundTest {
     }
 
     public <T> void creation(Params<T> params) {
-        IntervalInterface<T> interval = params.unbound.validate(params.five, params.ten);
+        Interval<T> interval = params.unbound.validate(params.five, params.ten);
         assertEquals(interval.start(), params.five);
         assertEquals(interval.end(), params.ten);
     }
 
     public <T> void creationWithNull(Params<T> params) {
-        IntervalInterface<T> interval;
+        Interval<T> interval;
         IntervalOperations<T> unbound = params.unbound();
 
         interval = unbound.validate(null, params.ten);
@@ -75,7 +76,7 @@ class UnboundTest {
     }
 
     public <T> void creationWithReversedParameters(Params<T> params) {
-        IntervalInterface<T> interval;
+        Interval<T> interval;
         IntervalOperations<T> unbound = params.unbound();
 
         interval = unbound.validate(params.ten, params.five);
@@ -93,8 +94,8 @@ class UnboundTest {
 
     public <T> void subsetOf(Params<T> params) {
         IntervalOperations<T> unbound = params.unbound();
-        IntervalInterface<T> emptySet = unbound.validate(params.five, params.five);
-        IntervalInterface<T> interval;
+        Interval<T> emptySet = unbound.validate(params.five, params.five);
+        Interval<T> interval;
 
         // 1. A set is always a subset of itself
         // 2. The empty set is a subset of all other sets
@@ -127,9 +128,9 @@ class UnboundTest {
 
     public <T> void union(Params<T> params) {
         IntervalOperations<T> unbound = params.unbound();
-        IntervalInterface<T> interval;
-        IntervalInterface<T> other;
-        IntervalInterface<T> union;
+        Interval<T> interval;
+        Interval<T> other;
+        Interval<T> union;
 
         interval = unbound.validate(params.five, params.ten);
         other = unbound.validate(params.ten, params.twenty);
@@ -193,9 +194,9 @@ class UnboundTest {
 
     public <T> void unionDisjoint(Params<T> params) {
         IntervalOperations<T> unbound = params.unbound();
-        IntervalInterface<T> interval;
-        IntervalInterface<T> other;
-        IntervalInterface<T> union;
+        Interval<T> interval;
+        Interval<T> other;
+        Interval<T> union;
 
         // Unions of disjoint intervals should return the empty interval
         // Also make sure that it is exclusive
@@ -222,9 +223,9 @@ class UnboundTest {
 
     public <T> void intersection(Params<T> params) {
         IntervalOperations<T> unbound = params.unbound();
-        IntervalInterface<T> interval;
-        IntervalInterface<T> other;
-        IntervalInterface<T> intersection;
+        Interval<T> interval;
+        Interval<T> other;
+        Interval<T> intersection;
 
         interval = unbound.validate(params.five, params.eleven);
         other = unbound.validate(params.ten, params.twenty);

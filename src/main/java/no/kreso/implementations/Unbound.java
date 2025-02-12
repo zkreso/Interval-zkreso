@@ -1,6 +1,6 @@
 package no.kreso.implementations;
 
-import no.kreso.IntervalRecord;
+import no.kreso.Interval;
 
 import java.util.Comparator;
 
@@ -13,7 +13,7 @@ public class Unbound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public boolean subsetOf(IntervalInterface<T> left, IntervalInterface<T> right) {
+    public boolean subsetOf(Interval<T> left, Interval<T> right) {
         if (isEmpty(left)) {
             return true;
         }
@@ -24,7 +24,7 @@ public class Unbound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public boolean isEmpty(IntervalInterface<T> interval) {
+    public boolean isEmpty(Interval<T> interval) {
         if (interval.start() == null || interval.end() == null) {
             return false;
         }
@@ -32,7 +32,7 @@ public class Unbound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public IntervalInterface<T> intersection(IntervalInterface<T> left, IntervalInterface<T> right) {
+    public Interval<T> intersection(Interval<T> left, Interval<T> right) {
         if (isEmpty(left)) {
             return left;
         }
@@ -46,7 +46,7 @@ public class Unbound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public IntervalInterface<T> union(IntervalInterface<T> left, IntervalInterface<T> right) {
+    public Interval<T> union(Interval<T> left, Interval<T> right) {
         if (isEmpty(left)) {
             return right;
         }
@@ -68,11 +68,11 @@ public class Unbound<T> implements IntervalOperations<T> {
     }
 
     @Override
-    public IntervalInterface<T> validate(T start, T end) {
+    public Interval<T> validate(T start, T end) {
         if (start == null || end == null) {
-            return IntervalRecord.of(start, end);
+            return Interval.of(start, end);
         }
-        return IntervalRecord.of(start, comparator.compare(start, end) > 0 ? start : end);
+        return Interval.of(start, comparator.compare(start, end) > 0 ? start : end);
     }
 
     private T minStart(T fst, T snd) {
