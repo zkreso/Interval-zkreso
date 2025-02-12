@@ -1,14 +1,15 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
+import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
-public class LeftBound<T> implements IntervalOperations<T> {
+public class RightBound<T> implements Operations<T> {
 
     private final Comparator<T> comparator;
 
-    public LeftBound(Comparator<T> comparator) {
+    public RightBound(Comparator<T> comparator) {
         this.comparator = comparator;
     }
 
@@ -52,11 +53,11 @@ public class LeftBound<T> implements IntervalOperations<T> {
         }
         boolean leftEndsBeforeRightStarts = compareTo(left.end(), right.start()) < 0;
         if (leftEndsBeforeRightStarts) {
-            return Interval.of(right.start(), right.start());
+            return IntervalDefault.of(right.start(), right.start());
         }
         boolean rightEndsBeforeLeftBegins = compareTo(right.end(), left.start()) < 0;
         if (rightEndsBeforeLeftBegins) {
-            return Interval.of(left.start(), left.start());
+            return IntervalDefault.of(left.start(), left.start());
         }
         return validate(
                 min(left.start(), right.start()),
@@ -66,7 +67,7 @@ public class LeftBound<T> implements IntervalOperations<T> {
 
     @Override
     public Interval<T> validate(T start, T end) {
-        return Interval.of(start, max(start, end));
+        return IntervalDefault.of(start, max(start, end));
     }
 
     private T max(T fst, T snd) {
@@ -82,7 +83,7 @@ public class LeftBound<T> implements IntervalOperations<T> {
             return 0;
         }
         if (fst == null ^ snd == null) {
-            return (fst == null) ? 1 : -1;
+            return (fst == null) ? -1 : 1;
         }
         return comparator.compare(fst, snd);
     }

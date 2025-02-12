@@ -1,10 +1,11 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
+import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
-public class Unbound<T> implements IntervalOperations<T> {
+public class Unbound<T> implements Operations<T> {
 
     private final Comparator<T> comparator;
 
@@ -70,9 +71,9 @@ public class Unbound<T> implements IntervalOperations<T> {
     @Override
     public Interval<T> validate(T start, T end) {
         if (start == null || end == null) {
-            return Interval.of(start, end);
+            return IntervalDefault.of(start, end);
         }
-        return Interval.of(start, comparator.compare(start, end) > 0 ? start : end);
+        return IntervalDefault.of(start, comparator.compare(start, end) > 0 ? start : end);
     }
 
     private T minStart(T fst, T snd) {

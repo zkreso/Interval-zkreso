@@ -1,6 +1,6 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UnboundTest {
     
-    record Params<T>(IntervalOperations<T> unbound, T five,T ten, T eleven, T twenty) { }
+    record Params<T>(Operations<T> unbound, T five, T ten, T eleven, T twenty) { }
 
     @Test
     public void testDate() {
@@ -57,7 +57,7 @@ class UnboundTest {
 
     public <T> void creationWithNull(Params<T> params) {
         Interval<T> interval;
-        IntervalOperations<T> unbound = params.unbound();
+        Operations<T> unbound = params.unbound();
 
         interval = unbound.validate(null, params.ten);
         assertNull(interval.start());
@@ -77,7 +77,7 @@ class UnboundTest {
 
     public <T> void creationWithReversedParameters(Params<T> params) {
         Interval<T> interval;
-        IntervalOperations<T> unbound = params.unbound();
+        Operations<T> unbound = params.unbound();
 
         interval = unbound.validate(params.ten, params.five);
         assertTrue(unbound.isEmpty(interval));
@@ -93,7 +93,7 @@ class UnboundTest {
     }
 
     public <T> void subsetOf(Params<T> params) {
-        IntervalOperations<T> unbound = params.unbound();
+        Operations<T> unbound = params.unbound();
         Interval<T> emptySet = unbound.validate(params.five, params.five);
         Interval<T> interval;
 
@@ -127,7 +127,7 @@ class UnboundTest {
     }
 
     public <T> void union(Params<T> params) {
-        IntervalOperations<T> unbound = params.unbound();
+        Operations<T> unbound = params.unbound();
         Interval<T> interval;
         Interval<T> other;
         Interval<T> union;
@@ -193,7 +193,7 @@ class UnboundTest {
     }
 
     public <T> void unionDisjoint(Params<T> params) {
-        IntervalOperations<T> unbound = params.unbound();
+        Operations<T> unbound = params.unbound();
         Interval<T> interval;
         Interval<T> other;
         Interval<T> union;
@@ -222,7 +222,7 @@ class UnboundTest {
     }
 
     public <T> void intersection(Params<T> params) {
-        IntervalOperations<T> unbound = params.unbound();
+        Operations<T> unbound = params.unbound();
         Interval<T> interval;
         Interval<T> other;
         Interval<T> intersection;

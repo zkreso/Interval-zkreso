@@ -1,9 +1,9 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
 
-public interface IntervalOperations<T> {
+public interface Operations<T> {
     boolean subsetOf(Interval<T> left, Interval<T> right);
     boolean isEmpty(Interval<T> interval);
     Interval<T> intersection(Interval<T> left, Interval<T> right);

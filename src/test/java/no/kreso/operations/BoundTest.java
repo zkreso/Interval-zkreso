@@ -1,6 +1,6 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BoundTest {
 
-    record Params<T>(IntervalOperations<T> bound, T five, T ten, T eleven, T twenty) { }
+    record Params<T>(Operations<T> bound, T five, T ten, T eleven, T twenty) { }
 
     @Test
     void testInteger() {

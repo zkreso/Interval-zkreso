@@ -1,6 +1,6 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LeftBoundTest {
 
-    record Params<T>(IntervalOperations<T> bound, T five, T ten, T eleven, T twenty) { }
+    record Params<T>(Operations<T> bound, T five, T ten, T eleven, T twenty) { }
 
     @Test
     public void testDate() {
@@ -47,14 +47,14 @@ public class LeftBoundTest {
     }
 
     public <T> void creation(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> interval = bound.validate(params.five, params.ten);
         assertEquals(interval.start(), params.five);
         assertEquals(interval.end(), params.ten);
     }
 
     public <T> void creationWithNull(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> interval;
 
         interval = bound.validate(null, params.ten);
@@ -70,7 +70,7 @@ public class LeftBoundTest {
     }
 
     public <T> void creationWithReversedParameters(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> interval;
 
         interval = bound.validate(params.ten, params.five);
@@ -78,7 +78,7 @@ public class LeftBoundTest {
     }
 
     public <T> void subsetOf(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> emptySet = bound.validate(params.five, params.five);
         Interval<T> interval;
 
@@ -112,7 +112,7 @@ public class LeftBoundTest {
     }
 
     public <T> void union(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> interval;
         Interval<T> other;
         Interval<T> union;
@@ -143,7 +143,7 @@ public class LeftBoundTest {
     }
 
     public <T> void unionDisjoint(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> interval;
         Interval<T> other;
         Interval<T> union;
@@ -162,7 +162,7 @@ public class LeftBoundTest {
     }
 
     public <T> void intersection(Params<T> params) {
-        IntervalOperations<T> bound = params.bound();
+        Operations<T> bound = params.bound();
         Interval<T> interval;
         Interval<T> other;
         Interval<T> intersection;

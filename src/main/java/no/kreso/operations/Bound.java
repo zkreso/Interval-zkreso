@@ -1,10 +1,11 @@
-package no.kreso.implementations;
+package no.kreso.operations;
 
-import no.kreso.Interval;
+import no.kreso.interval.Interval;
+import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
-public final class Bound<T> implements IntervalOperations<T> {
+public final class Bound<T> implements Operations<T> {
 
     private final Comparator<T> comparator;
     private final T minValue;
@@ -30,7 +31,7 @@ public final class Bound<T> implements IntervalOperations<T> {
     public Interval<T> validate(T start, T end) {
         start = sanitizeStart(start);
         end = maxEnd(start, end);
-        return Interval.of(start, end);
+        return IntervalDefault.of(start, end);
     }
 
     @Override
