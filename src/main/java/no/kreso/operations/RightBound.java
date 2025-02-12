@@ -19,7 +19,7 @@ public class RightBound<T> implements Operations<T> {
             return true;
         }
         if (isEmpty(right)) {
-            return isEmpty(left);
+            return false;
         }
         return compareTo(left.start(), right.start()) >= 0 && compareTo(left.end(), right.end()) <= 0;
     }

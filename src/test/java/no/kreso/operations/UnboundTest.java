@@ -102,6 +102,7 @@ class UnboundTest {
         // 3. The empty set has only the empty set as a subset
         interval = unbound.validate(params.five, params.ten);
         assertTrue(unbound.subsetOf(interval, interval));
+        assertTrue(unbound.subsetOf(emptySet, emptySet));
         assertTrue(unbound.subsetOf(emptySet, interval));
         assertFalse(unbound.subsetOf(interval, emptySet));
 

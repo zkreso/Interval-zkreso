@@ -87,6 +87,7 @@ public class LeftBoundTest {
         // 3. The empty set has only the empty set as a subset
         interval = bound.validate(params.five, params.ten);
         assertTrue(bound.subsetOf(interval, interval));
+        assertTrue(bound.subsetOf(emptySet, emptySet));
         assertTrue(bound.subsetOf(emptySet, interval));
         assertFalse(bound.subsetOf(interval, emptySet));
 

@@ -85,6 +85,7 @@ class BoundTest {
         emptySet = params.bound().validate(params.twenty, params.twenty);
 
         assertTrue(params.bound().subsetOf(interval, interval));
+        assertTrue(params.bound().subsetOf(emptySet, emptySet));
 
         Interval<T> otherEmptySet = params.bound().validate(params.ten, params.ten);
         assertTrue(params.bound().subsetOf(emptySet, interval));
