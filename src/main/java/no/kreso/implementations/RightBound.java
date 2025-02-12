@@ -4,11 +4,11 @@ import no.kreso.Interval;
 
 import java.util.Comparator;
 
-public class LeftBound<T> implements IntervalOperations<T> {
+public class RightBound<T> implements IntervalOperations<T> {
 
     private final Comparator<T> comparator;
 
-    public LeftBound(Comparator<T> comparator) {
+    public RightBound(Comparator<T> comparator) {
         this.comparator = comparator;
     }
 
@@ -82,7 +82,7 @@ public class LeftBound<T> implements IntervalOperations<T> {
             return 0;
         }
         if (fst == null ^ snd == null) {
-            return (fst == null) ? 1 : -1;
+            return (fst == null) ? -1 : 1;
         }
         return comparator.compare(fst, snd);
     }
