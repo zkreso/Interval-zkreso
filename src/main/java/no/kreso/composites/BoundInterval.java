@@ -6,6 +6,9 @@ import no.kreso.operations.Operations;
 import java.time.LocalDate;
 import java.util.Comparator;
 
+/**
+ * Example implementation of Composite for a bound interval
+ */
 public class BoundInterval<T> extends Composite<T, BoundInterval<T>> {
 
     private static final Bound<Integer> integerOperations = new Bound<>(Comparator.naturalOrder(), Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -25,6 +28,6 @@ public class BoundInterval<T> extends Composite<T, BoundInterval<T>> {
 
     @Override
     BoundInterval<T> newInstance(T start, T end) {
-        return new BoundInterval<T>(start, end, super.operations());
+        return new BoundInterval<>(start, end, super.operations());
     }
 }

@@ -6,6 +6,9 @@ import no.kreso.operations.Unbound;
 import java.time.LocalDate;
 import java.util.Comparator;
 
+/**
+ * Example implementation of Composite for an unbound interval
+ */
 public class UnboundInterval<T> extends Composite<T, UnboundInterval<T>> {
 
     private static final Unbound<Integer> integerOperations = new Unbound<Integer>(Comparator.naturalOrder());

@@ -5,12 +5,21 @@ import no.kreso.interval.Interval;
 import no.kreso.operations.Operations;
 
 
+/**
+ * Class that acts as a composite of the Interval and Operations (on interval) interfaces. The primary goal of this
+ * class is to unify the creation of intervals with operations on them, for a less verbose API. Additionally, we most
+ * often want to keep intervals created through different Operations contexts separate. This class acts as a wrapper which
+ * enables the type system to enforce this for us automatically.
+ *
+ * @param <T> The type of the interval
+ * @param <U> The concrete implementation of this abstract class.
+ */
 public abstract class Composite<T, U extends Composite<T, U>> implements Interval<T> {
 
     private final Interval<T> interval;
     private final Operations<T> operations;
 
-    public Composite(T start, T end, Operations<T> operations) {
+    Composite(T start, T end, Operations<T> operations) {
         this.operations = operations;
         this.interval = operations().validate(start, end);
     }
