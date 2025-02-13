@@ -5,12 +5,24 @@ import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
+/**
+ * An implementation of operations on intervals that are bound to a concrete (non-null) minimal and maximal value.
+ * With this, we mean that positive or negative infinity are not represented. Null inputs for lower or upper bound
+ * will be replaced by these minimal and maximal values respectively.
+ */
 public final class Bound<T> implements Operations<T> {
 
     private final Comparator<T> comparator;
     private final T minValue;
     private final T maxValue;
 
+    /**
+     * @param comparator Comparator for the specific type T.
+     * @param minValue The minimal value for the specific type T. Any null inputs for the lower bound will be
+     *                 substituted by this value.
+     * @param maxValue The maximal value for the specific type T. Any null inputs for the upper bound will be
+     *                 substituted by this value.
+     */
     public Bound(Comparator<T> comparator, T minValue, T maxValue) {
         this.comparator = comparator;
         this.maxValue = maxValue;

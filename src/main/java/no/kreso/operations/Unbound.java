@@ -5,6 +5,11 @@ import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
+/**
+ * An implementation of operations on intervals that are unbound. By this, we mean that both positive and negative
+ * infinity is representable. Specifically, null represents negative infinity in the context of lower bound and positive
+ * infinity in the context of upper bound.
+ */
 public class Unbound<T> implements Operations<T> {
 
     private final Comparator<T> comparator;

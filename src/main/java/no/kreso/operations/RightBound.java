@@ -5,6 +5,10 @@ import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
+/**
+ * An implementation of operations on intervals that are right-bound. By this, we mean that negative infinity is
+ * representable. Specifically, null represents negative infinity when applied to either the lower or upper bound.
+ */
 public class RightBound<T> implements Operations<T> {
 
     private final Comparator<T> comparator;
