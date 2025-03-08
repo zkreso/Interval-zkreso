@@ -6,8 +6,8 @@ import no.kreso.interval.IntervalDefault;
 import java.util.Comparator;
 
 /**
- * Default implementation of Operations. Relies on a null safe comparator to determine how to interpret null at the
- * lower and upper bound.
+ * Default implementation of Operations. This implementation is null safe. However, to achieve null safety, the user
+ * must specify if null should be interpreted as positive or negative infinity at both bounds of the interval.
  */
 public class OperationsDefault<T> implements Operations<T> {
 
@@ -15,6 +15,13 @@ public class OperationsDefault<T> implements Operations<T> {
     private final NullInterpretation lower;
     private final NullInterpretation upper;
 
+    /**
+     * Default constructor. Note that some parameterless static methods are available if the default comparator for
+     * the type is sufficient.
+     * @param comparator Comparator for the type in question.
+     * @param lower How a null value at the lower bound of the interval should be interpreted.
+     * @param upper How a null value at the upper bound of the interval should be interpreted.
+     */
     public OperationsDefault(
             Comparator<T> comparator,
             NullInterpretation lower,
@@ -27,7 +34,7 @@ public class OperationsDefault<T> implements Operations<T> {
 
     /**
      * Create operations on intervals that treat null as negative infinity for the lower bound and
-     * as positive infinity for the upper bound. Type U must implement Comparable.
+     * as positive infinity for the upper bound. The default comparator for the type will be used.
      */
     public static <U extends Comparable<? super U>> Operations<U> unbound() {
         return new OperationsDefault<>(
@@ -39,8 +46,7 @@ public class OperationsDefault<T> implements Operations<T> {
 
     /**
      * Create operations on intervals that treat null as positive infinity when applied both to lower
-     * and upper bound.
-     * Type U must implement Comparable.
+     * and upper bound. The default comparator for the type will be used.
      */
     public static <U extends Comparable<? super U>> Operations<U> leftBound() {
         return new OperationsDefault<>(
@@ -52,8 +58,7 @@ public class OperationsDefault<T> implements Operations<T> {
 
     /**
      * Create operations on intervals that treat null as negative infinity when applied both to lower
-     * and upper bound.
-     * Type U must implement Comparable.
+     * and upper bound. The default comparator for the type will be used.
      */
     public static <U extends Comparable<? super U>> Operations<U> rightBound() {
         return new OperationsDefault<>(
@@ -173,6 +178,7 @@ public class OperationsDefault<T> implements Operations<T> {
     }
 
     public enum NullInterpretation {
+
         POSITIVE_INFINITY(1),
         NEGATIVE_INFINITY(-1);
 
