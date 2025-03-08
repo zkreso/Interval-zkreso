@@ -11,10 +11,18 @@ import java.util.Comparator;
  */
 public class OperationsDefault<T> implements Operations<T> {
 
-    private final NullSafeComparator<T> comparator;
+    private final Comparator<T> comparator;
+    private final NullInterpretation lower;
+    private final NullInterpretation upper;
 
-    public OperationsDefault(NullSafeComparator<T> comparator) {
+    public OperationsDefault(
+            Comparator<T> comparator,
+            NullInterpretation lower,
+            NullInterpretation upper
+    ) {
         this.comparator = comparator;
+        this.lower = lower;
+        this.upper = upper;
     }
 
     /**
@@ -22,10 +30,11 @@ public class OperationsDefault<T> implements Operations<T> {
      * as positive infinity for the upper bound. Type U must implement Comparable.
      */
     public static <U extends Comparable<? super U>> Operations<U> unbound() {
-        NullSafeComparator<U> comparator = new NullSafeComparator<>(Comparator.<U>naturalOrder(),
-                NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY,
-                NullSafeComparator.NullInterpretation.POSITIVE_INFINITY);
-        return new OperationsDefault<>(comparator);
+        return new OperationsDefault<>(
+                Comparator.<U>naturalOrder(),
+                NullInterpretation.NEGATIVE_INFINITY,
+                NullInterpretation.POSITIVE_INFINITY
+        );
     }
 
     /**
@@ -34,10 +43,11 @@ public class OperationsDefault<T> implements Operations<T> {
      * Type U must implement Comparable.
      */
     public static <U extends Comparable<? super U>> Operations<U> leftBound() {
-        NullSafeComparator<U> comparator = new NullSafeComparator<>(Comparator.<U>naturalOrder(),
-                NullSafeComparator.NullInterpretation.POSITIVE_INFINITY,
-                NullSafeComparator.NullInterpretation.POSITIVE_INFINITY);
-        return new OperationsDefault<>(comparator);
+        return new OperationsDefault<>(
+                Comparator.<U>naturalOrder(),
+                NullInterpretation.POSITIVE_INFINITY,
+                NullInterpretation.POSITIVE_INFINITY
+        );
     }
 
     /**
@@ -46,10 +56,11 @@ public class OperationsDefault<T> implements Operations<T> {
      * Type U must implement Comparable.
      */
     public static <U extends Comparable<? super U>> Operations<U> rightBound() {
-        NullSafeComparator<U> comparator = new NullSafeComparator<>(Comparator.<U>naturalOrder(),
-                NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY,
-                NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY);
-        return new OperationsDefault<>(comparator);
+        return new OperationsDefault<>(
+                Comparator.<U>naturalOrder(),
+                NullInterpretation.NEGATIVE_INFINITY,
+                NullInterpretation.NEGATIVE_INFINITY
+        );
     }
 
     @Override
@@ -65,7 +76,7 @@ public class OperationsDefault<T> implements Operations<T> {
 
     @Override
     public boolean isEmpty(Interval<T> interval) {
-        return comparator.compareStartToEnd(interval.start(), interval.end()) >= 0;
+        return compareStartToEnd(interval.start(), interval.end()) >= 0;
     }
 
     @Override
@@ -90,11 +101,11 @@ public class OperationsDefault<T> implements Operations<T> {
         if (isEmpty(right)) {
             return left;
         }
-        boolean rightStartsAfterLeftEnds = comparator.compareStartToEnd(right.start(), left.end()) > 0;
+        boolean rightStartsAfterLeftEnds = compareStartToEnd(right.start(), left.end()) > 0;
         if (rightStartsAfterLeftEnds) {
             return validate(left.end(), left.end());
         }
-        boolean leftStartsAfterRightEnds = comparator.compareStartToEnd(left.start(), right.end()) > 0;
+        boolean leftStartsAfterRightEnds = compareStartToEnd(left.start(), right.end()) > 0;
         if (leftStartsAfterRightEnds) {
             return validate(left.start(), left.start());
         }
@@ -106,7 +117,7 @@ public class OperationsDefault<T> implements Operations<T> {
 
     @Override
     public Interval<T> validate(T start, T end) {
-        return IntervalDefault.of(start, comparator.compareStartToEnd(start, end) > 0 ? start : end);
+        return IntervalDefault.of(start, compareStartToEnd(start, end) > 0 ? start : end);
     }
 
     private T minStart(T fst, T snd) {
@@ -125,11 +136,50 @@ public class OperationsDefault<T> implements Operations<T> {
         return compareEnd(fst, snd) > 0 ? fst : snd;
     }
 
-    private int compareStart(T fst, T snd) {
-        return comparator.compareStart(fst, snd);
+    public int compareStart(T fst, T snd) {
+        return compare(fst, snd, lower);
     }
 
-    private int compareEnd(T fst, T snd) {
-        return comparator.compareEnd(fst, snd);
+    public int compareEnd(T fst, T snd) {
+        return compare(fst, snd, upper);
+    }
+
+    public int compareStartToEnd(T start, T end) {
+        if (lower == upper) {
+            if (start == null && end == null) {
+                return 0;
+            }
+            if (start == null) {
+                return lower.signum;
+            }
+            if (end == null) {
+                return -lower.signum;
+            }
+        }
+        if (start == null || end == null) {
+            return -1;
+        }
+        return comparator.compare(start, end);
+    }
+
+    private int compare(T fst, T snd, NullInterpretation bound) {
+        if (fst == null && snd == null) {
+            return 0;
+        }
+        if (fst == null ^ snd == null) {
+            return fst == null ? bound.signum : -bound.signum;
+        }
+        return comparator.compare(fst, snd);
+    }
+
+    public enum NullInterpretation {
+        POSITIVE_INFINITY(1),
+        NEGATIVE_INFINITY(-1);
+
+        private final int signum;
+
+        NullInterpretation(int signum) {
+            this.signum = signum;
+        }
     }
 }

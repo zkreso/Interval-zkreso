@@ -33,12 +33,11 @@ public class RightBoundTest {
 
     @Test
     public void testIntegerReverse() {
-        NullSafeComparator<Integer> comparator = new NullSafeComparator<>(
+        OperationsDefault<Integer> operations = new OperationsDefault<>(
                 Comparator.<Integer>reverseOrder(),
-                NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY,
-                NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY
+                OperationsDefault.NullInterpretation.NEGATIVE_INFINITY,
+                OperationsDefault.NullInterpretation.NEGATIVE_INFINITY
         );
-        OperationsDefault<Integer> operations = new OperationsDefault<>(comparator);
         Params<Integer> params = new Params<>(
                 operations,
                 20, 11, 10, 5);
