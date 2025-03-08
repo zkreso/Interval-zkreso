@@ -126,10 +126,10 @@ public class OperationsDefault<T> implements Operations<T> {
     }
 
     private int compareStart(T fst, T snd) {
-        return comparator.compareStartToStart(fst, snd);
+        return comparator.compareStart(fst, snd);
     }
 
     private int compareEnd(T fst, T snd) {
-        return comparator.compareEndToEnd(fst, snd);
+        return comparator.compareEnd(fst, snd);
     }
 }

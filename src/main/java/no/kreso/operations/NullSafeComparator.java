@@ -9,11 +9,11 @@ public record NullSafeComparator<T>(
         NullSafeComparator.NullInterpretation upper
 ) {
 
-    public int compareStartToStart(T fst, T snd) {
+    public int compareStart(T fst, T snd) {
         return compare(fst, snd, lower);
     }
 
-    public int compareEndToEnd(T fst, T snd) {
+    public int compareEnd(T fst, T snd) {
         return compare(fst, snd, upper);
     }
 
