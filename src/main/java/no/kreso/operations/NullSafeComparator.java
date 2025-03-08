@@ -3,32 +3,32 @@ package no.kreso.operations;
 
 import java.util.Comparator;
 
-public record NullSafeComparator(
-        Comparator<Integer> comparator,
+public record NullSafeComparator<T>(
+        Comparator<T> comparator,
         NullSafeComparator.NullInterpretation lower,
         NullSafeComparator.NullInterpretation upper
 ) {
 
-    public static NullSafeComparator singleMeaning(Comparator<Integer> comparator, NullInterpretation interpretation) {
-        return new NullSafeComparator(comparator, interpretation, interpretation);
+    public static <U> NullSafeComparator<U> singleMeaning(Comparator<U> comparator, NullInterpretation interpretation) {
+        return new NullSafeComparator<>(comparator, interpretation, interpretation);
     }
 
-    public int compareStartToStart(Integer fst, Integer snd) {
+    public int compareStartToStart(T fst, T snd) {
         return compare(fst, snd, lower);
     }
 
-    public int compareEndToEnd(Integer fst, Integer snd) {
+    public int compareEndToEnd(T fst, T snd) {
         return compare(fst, snd, upper);
     }
 
-    public int compareStartToEnd(Integer start, Integer end) {
+    public int compareStartToEnd(T start, T end) {
         if (start == null || end == null) {
             return lower == upper ? 0 : -1;
         }
         return comparator.compare(start, end);
     }
 
-    private int compare(Integer fst, Integer snd, NullInterpretation bound) {
+    private int compare(T fst, T snd, NullInterpretation bound) {
         if (fst == null && snd == null) {
             return 0;
         }

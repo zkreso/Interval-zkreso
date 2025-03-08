@@ -15,7 +15,7 @@ class UnboundTest {
     @Test
     public void testDate() {
         Params<LocalDate> params = new Params<>(
-                new Unbound<>(Comparator.<LocalDate>naturalOrder()),
+                OperationsDefault.unbound(),
                 LocalDate.of(2025, 2, 5),
                 LocalDate.of(2025, 2, 10),
                 LocalDate.of(2025, 2, 11),
@@ -26,15 +26,21 @@ class UnboundTest {
     @Test
     public void testInteger() {
         Params<Integer> params = new Params<>(
-                new Unbound<>(Comparator.<Integer>naturalOrder()),
+                OperationsDefault.unbound(),
                 5, 10, 11, 20);
         runTests(params);
     }
 
     @Test
     public void testIntegerReverse() {
+        NullSafeComparator<Integer> comparator = new NullSafeComparator<>(
+                Comparator.<Integer>reverseOrder(),
+                NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY,
+                NullSafeComparator.NullInterpretation.POSITIVE_INFINITY
+        );
+        OperationsDefault<Integer> operations = new OperationsDefault<>(comparator);
         Params<Integer> params = new Params<>(
-                new Unbound<>(Comparator.<Integer>reverseOrder()),
+                operations,
                 20, 11, 10, 5);
         runTests(params);
     }
