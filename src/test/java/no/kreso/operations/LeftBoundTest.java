@@ -14,7 +14,8 @@ public class LeftBoundTest {
 
     @Test
     public void testDate() {
-        Params<LocalDate> params = new Params<>(new LeftBound<LocalDate>(Comparator.naturalOrder()),
+        Params<LocalDate> params = new Params<>(
+                OperationsDefault.leftBound(),
                 LocalDate.of(2025, 2, 5),
                 LocalDate.of(2025, 2, 10),
                 LocalDate.of(2025, 2, 11),
@@ -24,14 +25,22 @@ public class LeftBoundTest {
 
     @Test
     public void testInteger() {
-        Params<Integer> params = new Params<>(new LeftBound<Integer>(Comparator.naturalOrder()),
+        Params<Integer> params = new Params<>(
+                OperationsDefault.leftBound(),
                 5, 10, 11, 20);
         runTests(params);
     }
 
     @Test
     public void testIntegerReverse() {
-        Params<Integer> params = new Params<>(new LeftBound<Integer>(Comparator.reverseOrder()),
+        NullSafeComparator<Integer> comparator = new NullSafeComparator<>(
+                Comparator.<Integer>reverseOrder(),
+                NullSafeComparator.NullInterpretation.POSITIVE_INFINITY,
+                NullSafeComparator.NullInterpretation.POSITIVE_INFINITY
+        );
+        OperationsDefault<Integer> operations = new OperationsDefault<>(comparator);
+        Params<Integer> params = new Params<>(
+                operations,
                 20, 11, 10, 5);
         runTests(params);
     }

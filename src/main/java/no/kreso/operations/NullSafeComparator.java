@@ -9,10 +9,6 @@ public record NullSafeComparator<T>(
         NullSafeComparator.NullInterpretation upper
 ) {
 
-    public static <U> NullSafeComparator<U> singleMeaning(Comparator<U> comparator, NullInterpretation interpretation) {
-        return new NullSafeComparator<>(comparator, interpretation, interpretation);
-    }
-
     public int compareStartToStart(T fst, T snd) {
         return compare(fst, snd, lower);
     }
@@ -22,8 +18,19 @@ public record NullSafeComparator<T>(
     }
 
     public int compareStartToEnd(T start, T end) {
+        if (lower == upper) {
+            if (start == null && end == null) {
+                return 0;
+            }
+            if (start == null) {
+                return lower().signum();
+            }
+            if (end == null) {
+                return -lower().signum();
+            }
+        }
         if (start == null || end == null) {
-            return lower == upper ? 0 : -1;
+            return -1;
         }
         return comparator.compare(start, end);
     }

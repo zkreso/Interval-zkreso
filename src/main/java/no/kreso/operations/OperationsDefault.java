@@ -5,6 +5,10 @@ import no.kreso.interval.IntervalDefault;
 
 import java.util.Comparator;
 
+/**
+ * Default implementation of Operations. Relies on a null safe comparator to determine how to interpret null at the
+ * lower and upper bound.
+ */
 public class OperationsDefault<T> implements Operations<T> {
 
     private final NullSafeComparator<T> comparator;
@@ -17,7 +21,7 @@ public class OperationsDefault<T> implements Operations<T> {
      * Create operations on intervals that treat null as negative infinity for the lower bound and
      * as positive infinity for the upper bound. Type U must implement Comparable.
      */
-    public static <U extends Comparable<? super U>> OperationsDefault<U> unbound() {
+    public static <U extends Comparable<? super U>> Operations<U> unbound() {
         NullSafeComparator<U> comparator = new NullSafeComparator<>(Comparator.<U>naturalOrder(),
                 NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY,
                 NullSafeComparator.NullInterpretation.POSITIVE_INFINITY);
@@ -29,7 +33,7 @@ public class OperationsDefault<T> implements Operations<T> {
      * and upper bound.
      * Type U must implement Comparable.
      */
-    public static <U extends Comparable<? super U>> OperationsDefault<U> leftBound() {
+    public static <U extends Comparable<? super U>> Operations<U> leftBound() {
         NullSafeComparator<U> comparator = new NullSafeComparator<>(Comparator.<U>naturalOrder(),
                 NullSafeComparator.NullInterpretation.POSITIVE_INFINITY,
                 NullSafeComparator.NullInterpretation.POSITIVE_INFINITY);
@@ -41,7 +45,7 @@ public class OperationsDefault<T> implements Operations<T> {
      * and upper bound.
      * Type U must implement Comparable.
      */
-    public static <U extends Comparable<? super U>> OperationsDefault<U> rightBound() {
+    public static <U extends Comparable<? super U>> Operations<U> rightBound() {
         NullSafeComparator<U> comparator = new NullSafeComparator<>(Comparator.<U>naturalOrder(),
                 NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY,
                 NullSafeComparator.NullInterpretation.NEGATIVE_INFINITY);

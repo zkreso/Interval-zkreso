@@ -1,19 +1,18 @@
 package no.kreso.composites;
 
 import no.kreso.operations.Operations;
-import no.kreso.operations.Unbound;
+import no.kreso.operations.OperationsDefault;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UnboundIntervalTest {
+public class CompositeTest {
 
     private static class Interval extends Composite<LocalDate, Interval> {
 
-        private static final Operations<LocalDate> operations = new Unbound<LocalDate>(Comparator.naturalOrder());
+        private static final Operations<LocalDate> operations = OperationsDefault.unbound();
 
         private Interval(LocalDate start, LocalDate end) {
             super(start, end, operations);
