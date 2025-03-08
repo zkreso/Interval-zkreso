@@ -150,19 +150,14 @@ public class OperationsDefault<T> implements Operations<T> {
     }
 
     private int compareStartToEnd(T start, T end) {
-        if (lower == upper) {
-            if (start == null && end == null) {
-                return 0;
-            }
-            if (start == null) {
-                return lower.signum;
-            }
-            if (end == null) {
-                return -lower.signum;
-            }
+        if (start == null && end == null && lower == upper) {
+            return 0;
         }
-        if (start == null || end == null) {
-            return -1;
+        if (start == null) {
+            return (lower == NullInterpretation.NEGATIVE_INFINITY) ? -1 : 1;
+        }
+        if (end == null) {
+            return (upper == NullInterpretation.POSITIVE_INFINITY) ? -1 : 1;
         }
         return comparator.compare(start, end);
     }
