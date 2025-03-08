@@ -141,15 +141,15 @@ public class OperationsDefault<T> implements Operations<T> {
         return compareEnd(fst, snd) > 0 ? fst : snd;
     }
 
-    public int compareStart(T fst, T snd) {
+    private int compareStart(T fst, T snd) {
         return compare(fst, snd, lower);
     }
 
-    public int compareEnd(T fst, T snd) {
+    private int compareEnd(T fst, T snd) {
         return compare(fst, snd, upper);
     }
 
-    public int compareStartToEnd(T start, T end) {
+    private int compareStartToEnd(T start, T end) {
         if (lower == upper) {
             if (start == null && end == null) {
                 return 0;
